@@ -1,0 +1,11 @@
+{
+    "editor.wordBasedSuggestions": false,
+    "editor.formatOnSave": true,
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 130,
+    "editor.minimap.maxColumn": 130,
+    "editor.bracketPairColorization.enabled": true,
+    "rust-analyzer.imports.granularity.enforce": true,
+    "rust-analyzer.imports.granularity.group": "module",
+    "rust-analyzer.imports.prefix": "crate"
+}

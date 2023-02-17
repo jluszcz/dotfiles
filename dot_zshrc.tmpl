@@ -1,0 +1,80 @@
+# Path to your oh-my-zsh installation.
+export ZSH="{{ .chezmoi.homeDir }}/.oh-my-zsh"
+
+# Set name of the theme to load --- if set to "random", it will
+# load a random theme each time oh-my-zsh is loaded, in which case,
+# to know which specific one was loaded, run: echo $RANDOM_THEME
+# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
+ZSH_THEME="gallifrey"
+
+# Automatically update without prompting.
+DISABLE_UPDATE_PROMPT="true"
+
+# Uncomment the following line if you want to change the command execution time
+# stamp shown in the history command output.
+# You can set one of the optional three formats:
+# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+# or set a custom format using the strftime function format specifications,
+# see 'man strftime' for details.
+HIST_STAMPS="yyyy-mm-dd"
+
+# Which plugins would you like to load?
+# Standard plugins can be found in ~/.oh-my-zsh/plugins/*
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(git)
+
+source $ZSH/oh-my-zsh.sh
+
+# User configuration
+
+# You may need to manually set your language environment
+# export LANG=en_US.UTF-8
+
+# Set personal aliases, overriding those provided by oh-my-zsh libs,
+# plugins, and themes. Aliases can be placed here, though oh-my-zsh
+# users are encouraged to define aliases within the ZSH_CUSTOM folder.
+# For a full list of active aliases, run `alias`.
+
+# Navigation
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+
+# Git Aliases
+alias g='git'
+alias gb='git branch'
+alias gd='git diff'
+alias gl='git log'
+alias gp='git pull'
+alias gr='git rebase -i'
+alias gst='git status'
+alias gsw='git switch'
+alias wip="git add . && git commit -a -m '[No Comment]' --allow-empty"
+
+# Misc.
+alias src='source {{ .chezmoi.homeDir }}/.zprofile'
+alias l='ls'
+alias ll='ls -lh'
+alias tf='terraform'
+
+if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
+    source "{{ .chezmoi.homeDir }}/.cargo/env"
+    export RUSTC_WRAPPER=sccache
+fi
+
+alias js="cd {{ .chezmoi.homeDir }}/Documents/Programs/JakeSky-rs"
+alias lol="cd {{ .chezmoi.homeDir }}/Documents/Programs/ListOfLists-rs"
+
+alias bl="cd {{ .chezmoi.homeDir }}/Documents/BurgerList"
+alias ml="cd {{ .chezmoi.homeDir }}/Documents/MovieList"
+
+export HOMEBREW_NO_ENV_HINTS=1
+
+export MANPATH="/usr/local/man:$MANPATH"
+
+export PATH=/opt/homebrew/sbin:$PATH
+export PATH=/opt/homebrew/bin:$PATH
+export PATH={{ .chezmoi.homeDir }}/.bin:$PATH
