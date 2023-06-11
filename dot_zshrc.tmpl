@@ -56,9 +56,10 @@ alias wip="git add . && git commit -a -m '[No Comment]' --allow-empty"
 
 # Misc.
 alias src='source {{ .chezmoi.homeDir }}/.zprofile'
-alias l='ls'
+alias l=ls
 alias ll='ls -lh'
-alias tf='terraform'
+alias tf=terraform
+alias youtube-dl=yt-dlp
 
 if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     source "{{ .chezmoi.homeDir }}/.cargo/env"
