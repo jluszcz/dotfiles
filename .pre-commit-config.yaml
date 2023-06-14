@@ -1,0 +1,16 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+    -   id: check-merge-conflict
+    -   id: check-json
+        files: ^(\.chezmoiignore|.*gitignore|dot_vimrc)$
+    -   id: check-toml
+    -   id: check-yaml
+    -   id: detect-aws-credentials
+        args:
+            - --allow-missing-credentials
+    -   id: end-of-file-fixer
+    -   id: file-contents-sorter
+        files: ^(\.chezmoiignore|.*gitignore|dot_vimrc)$
+    -   id: trailing-whitespace
