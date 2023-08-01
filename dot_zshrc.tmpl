@@ -62,7 +62,6 @@ alias youtube-dl=yt-dlp
 
 if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     source "{{ .chezmoi.homeDir }}/.cargo/env"
-    export RUSTC_WRAPPER=sccache
 fi
 
 export HOMEBREW_NO_ENV_HINTS=1
