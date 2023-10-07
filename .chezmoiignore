@@ -2,8 +2,10 @@
 README.md
 
 {{- if ne .chezmoi.os "darwin" -}}
-run_onchange_brew.sh
+dot_aws
+dot_aws/*
 dot_config/Brewfile
 dot_config/dot_sublime
 dot_config/dot_vscode
+run_onchange_brew.sh
 {{- end -}}
