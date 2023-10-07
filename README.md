@@ -32,9 +32,11 @@ sudo yum -y install zsh
 
 # follow instructions at https://ohmyz.sh
 # follow instructions at https://rustup.rs
+# install sccache from https://github.com/mozilla/sccache/releases
 # follow instructions at https://www.chezmoi.io/install
 
 sudo mv bin/chezmoi /usr/local/bin
+rmdir bin
 
 chezmoi init git@github.com:jluszcz/dotfiles.git
 ```
