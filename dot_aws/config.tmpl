@@ -1,2 +1,4 @@
 [default]
+{{- if eq .chezmoi.os "darwin" -}}
 region = {{ onepasswordRead "op://Personal/sou26df5hzdtbezwmlosqlxjea/region" }}
+{{- end -}}

@@ -2,8 +2,6 @@
 README.md
 
 {{- if ne .chezmoi.os "darwin" -}}
-dot_aws
-dot_aws/*
 dot_config/Brewfile
 dot_config/dot_sublime
 dot_config/dot_vscode
