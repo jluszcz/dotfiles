@@ -5,5 +5,4 @@ README.md
 dot_config/Brewfile
 dot_config/dot_sublime
 dot_config/dot_vscode
-run_onchange_brew.sh
 {{ end }}
