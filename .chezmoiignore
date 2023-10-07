@@ -1,2 +1,9 @@
 .pre-commit-config.yml
 README.md
+
+{{- if ne .chezmoi.os "darwin" -}}
+run_onchange_brew.sh
+dot_config/Brewfile
+dot_config/dot_sublime
+dot_config/dot_vscode
+{{- end -}}

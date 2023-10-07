@@ -9,6 +9,6 @@ for f in *; do
 
     echo "$f"
     pushd "$f" > /dev/null
-    $@
+    "$@"
     popd > /dev/null
 done

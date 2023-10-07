@@ -12,5 +12,5 @@ repos:
             - --allow-missing-credentials
     -   id: end-of-file-fixer
     -   id: file-contents-sorter
-        files: ^(\.chezmoiignore|.*gitignore|dot_vimrc)$
+        files: ^(dot_vimrc)$
     -   id: trailing-whitespace
