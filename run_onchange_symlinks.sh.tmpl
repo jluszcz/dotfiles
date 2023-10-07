@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-{{- if eq .chezmoi.os "darwin" -}}
+{{ if eq .chezmoi.os "darwin" }}
 # Symlink preferences into the right places
 SUBLIME_PREFS_DIR="{{ .chezmoi.homeDir }}/Library/Application Support/Sublime Text/Packages/User"
 if [ -d "${SUBLIME_PREFS_DIR}" ]; then
@@ -20,4 +20,4 @@ if [ -d {{ .chezmoi.homeDir }}/Dropbox ]; then
     ln -svfh {{ .chezmoi.homeDir }}/Dropbox/Career {{ .chezmoi.homeDir }}/Documents/
     ln -svfh {{ .chezmoi.homeDir }}/Dropbox/Money {{ .chezmoi.homeDir }}/Documents/
 fi
-{{- end -}}
+{{ end }}

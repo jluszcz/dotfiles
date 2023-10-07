@@ -35,13 +35,13 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
-{{- if eq .chezmoi.os "darwin" -}}
+{{ if eq .chezmoi.os "darwin" }}
 alias js="cd {{ .chezmoi.homeDir }}/Documents/Programs/JakeSky-rs"
 alias lol="cd {{ .chezmoi.homeDir }}/Documents/Programs/ListOfLists-rs"
 
 alias bl="cd {{ .chezmoi.homeDir }}/Documents/BurgerList"
 alias ml="cd {{ .chezmoi.homeDir }}/Documents/MovieList"
-{{- end -}}
+{{ end }}
 
 # Git Aliases
 alias g='git'
@@ -66,11 +66,11 @@ if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     source "{{ .chezmoi.homeDir }}/.cargo/env"
 fi
 
-{{- if eq .chezmoi.os "darwin" -}}
+{{ if eq .chezmoi.os "darwin" }}
 export HOMEBREW_NO_ENV_HINTS=1
 export PATH=/opt/homebrew/sbin:$PATH
 export PATH=/opt/homebrew/bin:$PATH
-{{- end -}}
+{{ end }}
 
 export MANPATH="/usr/local/man:$MANPATH"
 
