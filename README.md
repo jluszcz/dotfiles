@@ -22,6 +22,7 @@ chezmoi init git@github.com:jluszcz/dotfiles.git
 
 ```bash
 sudo yum -y install zsh
+# set default shell by editing /etc/passwd
 
 # follow instructions at https://ohmyz.sh
 # follow instructions at https://rustup.rs
