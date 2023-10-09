@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+brew bundle dump -f --file={{ .chezmoi.homeDir }}/.config/Brewfile
+chezmoi add {{ .chezmoi.homeDir }}/.config/Brewfile

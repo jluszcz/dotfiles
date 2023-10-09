@@ -18,13 +18,6 @@ brew install chezmoi
 chezmoi init git@github.com:jluszcz/dotfiles.git
 ```
 
-### Dump Homebrew Packages
-
-```bash
-brew bundle dump -f --file=~/.config/Brewfile
-chezmoi add ~/.config/Brewfile
-```
-
 ## Linux
 
 ```bash
