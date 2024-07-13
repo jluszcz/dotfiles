@@ -19,5 +19,6 @@ if [ -d {{ .chezmoi.homeDir }}/Dropbox ]; then
     ln -svfh {{ .chezmoi.homeDir }}/Dropbox/Amazon {{ .chezmoi.homeDir }}/Documents/
     ln -svfh {{ .chezmoi.homeDir }}/Dropbox/Career {{ .chezmoi.homeDir }}/Documents/
     ln -svfh {{ .chezmoi.homeDir }}/Dropbox/Money {{ .chezmoi.homeDir }}/Documents/
+    ln -svfh {{ .chezmoi.homeDir }}/Dropbox/Programs/gen-todos {{ .chezmoi.homeDir }}/.bin/
 fi
 {{ end }}
