@@ -19,6 +19,10 @@ if [ -d {{ .chezmoi.homeDir }}/Dropbox ]; then
     ln -svfh {{ .chezmoi.homeDir }}/Dropbox/Amazon {{ .chezmoi.homeDir }}/Documents/
     ln -svfh {{ .chezmoi.homeDir }}/Dropbox/Career {{ .chezmoi.homeDir }}/Documents/
     ln -svfh {{ .chezmoi.homeDir }}/Dropbox/Money {{ .chezmoi.homeDir }}/Documents/
-    ln -svfh {{ .chezmoi.homeDir }}/Dropbox/Programs/gen-todos {{ .chezmoi.homeDir }}/.bin/
+fi
+
+# Symlink binaries
+if [ -f {{ .chezmoi.homeDir }}/Documents/Programs/todoer/dist/todoer ]; then
+    ln -svfh {{ .chezmoi.homeDir }}/Documents/Programs/todoer/dist/todoer {{ .chezmoi.homeDir }}/.bin/
 fi
 {{ end }}
