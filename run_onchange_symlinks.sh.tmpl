@@ -22,7 +22,7 @@ if [ -d {{ .chezmoi.homeDir }}/Dropbox ]; then
 fi
 
 # Symlink binaries
-if [ -f {{ .chezmoi.homeDir }}/Documents/Programs/todoer/dist/todoer ]; then
-    ln -svfh {{ .chezmoi.homeDir }}/Documents/Programs/todoer/dist/todoer {{ .chezmoi.homeDir }}/.bin/
+if [ -f {{ .chezmoi.homeDir }}/Documents/Programs/todoer/target/release/todoer ]; then
+    ln -svfh {{ .chezmoi.homeDir }}/Documents/Programs/todoer/target/release/todoer {{ .chezmoi.homeDir }}/.bin/
 fi
 {{ end }}
