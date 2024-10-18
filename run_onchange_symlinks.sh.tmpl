@@ -22,7 +22,13 @@ if [ -d {{ .chezmoi.homeDir }}/Dropbox ]; then
 fi
 
 # Symlink binaries
-if [ -f {{ .chezmoi.homeDir }}/Documents/Programs/todoer/target/release/todoer ]; then
-    ln -svfh {{ .chezmoi.homeDir }}/Documents/Programs/todoer/target/release/todoer {{ .chezmoi.homeDir }}/.bin/
+TODOER_BIN="{{ .chezmoi.homeDir }}/Documents/Programs/todoer/target/release/todoer"
+if [ -f "${TODOER_BIN}" ]; then
+    ln -svfh "${TODOER_BIN}" {{ .chezmoi.homeDir }}/.bin/
+fi
+
+RENAMER_BIN="{{ .chezmoi.homeDir }}/Documents/Programs/Renamer/target/release/renamer"
+if [ -f "${RENAMER_BIN}" ]; then
+    ln -svfh "${RENAMER_BIN}" {{ .chezmoi.homeDir }}/.bin/
 fi
 {{ end }}
