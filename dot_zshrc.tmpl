@@ -35,16 +35,6 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
-{{ if eq .chezmoi.os "darwin" }}
-alias js="cd {{ .chezmoi.homeDir }}/Documents/Programs/JakeSky-rs"
-alias lol="cd {{ .chezmoi.homeDir }}/Documents/Programs/ListOfLists-rs"
-
-alias bl="cd {{ .chezmoi.homeDir }}/Documents/BurgerList"
-alias ml="cd {{ .chezmoi.homeDir }}/Documents/MovieList"
-
-alias brewup="brew update; brew upgrade"
-{{ end }}
-
 # Git Aliases
 alias g='git'
 alias gb='git branch'
@@ -57,12 +47,10 @@ alias gsw='git switch'
 alias wip="git add . && git commit -a -m '[No Comment]' --allow-empty"
 
 # Misc.
-alias grep=ggrep
 alias l=ls
 alias ll='ls -lh'
 alias src='source {{ .chezmoi.homeDir }}/.zprofile'
 alias tf=terraform
-alias youtube-dl=yt-dlp
 
 if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     source "{{ .chezmoi.homeDir }}/.cargo/env"
@@ -72,6 +60,18 @@ fi
 export HOMEBREW_NO_ENV_HINTS=1
 export PATH=/opt/homebrew/sbin:$PATH
 export PATH=/opt/homebrew/bin:$PATH
+
+export DFT_BACKGROUND=light
+
+alias js="cd {{ .chezmoi.homeDir }}/Documents/Programs/JakeSky-rs"
+alias lol="cd {{ .chezmoi.homeDir }}/Documents/Programs/ListOfLists-rs"
+
+alias bl="cd {{ .chezmoi.homeDir }}/Documents/BurgerList"
+alias ml="cd {{ .chezmoi.homeDir }}/Documents/MovieList"
+
+alias brewup="brew update; brew upgrade"
+alias grep=ggrep
+alias youtube-dl=yt-dlp
 {{ end }}
 
 export MANPATH="/usr/local/man:$MANPATH"
