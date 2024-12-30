@@ -31,4 +31,9 @@ RENAMER_BIN="{{ .chezmoi.homeDir }}/Documents/Programs/Renamer/target/release/re
 if [ -f "${RENAMER_BIN}" ]; then
     ln -svfh "${RENAMER_BIN}" {{ .chezmoi.homeDir }}/.bin/
 fi
+
+SORTER_BIN="{{ .chezmoi.homeDir }}/Documents/Programs/Sortie/target/release/sortie"
+if [ -f "${SORTER_BIN}" ]; then
+    ln -svfh "${SORTER_BIN}" {{ .chezmoi.homeDir }}/.bin/
+fi
 {{ end }}
