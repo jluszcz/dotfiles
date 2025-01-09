@@ -44,7 +44,7 @@ alias gp='git pull'
 alias gr='git rebase -i'
 alias gst='git status'
 alias gsw='git switch'
-alias wip="git add . && git commit -a -m '[No Comment]' --allow-empty"
+alias wip="git add . && git commit -a -m '[Work In Progress]' --allow-empty"
 
 # Misc.
 alias l=ls
@@ -69,8 +69,13 @@ alias lol="cd {{ .chezmoi.homeDir }}/Documents/Programs/ListOfLists-rs"
 alias bl="cd {{ .chezmoi.homeDir }}/Documents/BurgerList"
 alias ml="cd {{ .chezmoi.homeDir }}/Documents/MovieList"
 
-alias brewup="brew update; brew upgrade"
+# Coreutils
 alias grep=ggrep
+alias echo=gecho
+alias sed=gsed
+export GREP=$(which ggrep)
+
+alias brewup="brew update; brew upgrade"
 alias youtube-dl=yt-dlp
 {{ end }}
 
