@@ -1,4 +1,8 @@
-[default]
-{{ if eq .chezmoi.os "darwin" }}
-region = {{ onepasswordRead "op://Personal/sou26df5hzdtbezwmlosqlxjea/region" }}
-{{ end }}
+{{- if eq .chezmoi.os "darwin" -}}
+[profile default]
+sso_start_url = {{ .aws_sso_url }}
+sso_region = {{ .aws_region }}
+sso_account_id = {{ .aws_sso_account_id }}
+sso_role_name = AdministratorAccess
+region = {{ .aws_region }}
+{{- end }}

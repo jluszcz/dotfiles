@@ -1,3 +1,9 @@
 {{- $email := promptStringOnce . "email" "Email address" -}}
+{{- $aws_region := promptStringOnce . "aws_region" "Default AWS Region" -}}
+{{- $aws_sso_url := promptStringOnce . "aws_sso_url" "AWS SSO URL" -}}
+{{- $aws_sso_account_id := promptStringOnce . "aws_sso_account_id" "AWS SSO Account ID" -}}
 [data]
 email = {{ $email | quote }}
+aws_region = {{ $aws_region | quote }}
+aws_sso_url = {{ $aws_sso_url | quote }}
+aws_sso_account_id = {{ $aws_sso_account_id | quote }}
