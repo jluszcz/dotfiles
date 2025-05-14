@@ -5,13 +5,13 @@
 SUBLIME_PREFS_DIR="{{ .chezmoi.homeDir }}/Library/Application Support/Sublime Text/Packages/User"
 if [ -d "${SUBLIME_PREFS_DIR}" ]; then
     rm -f "${SUBLIME_PREFS_DIR}/Preferences.sublime-settings"
-    ln -svfh {{ .chezmoi.homeDir }}/.config/.sublime "${SUBLIME_PREFS_DIR}/Preferences.sublime-settings"
+    ln -svfh {{ .chezmoi.homeDir }}/.config/Sublime.json "${SUBLIME_PREFS_DIR}/Preferences.sublime-settings"
 fi
 
 VSCODE_PREFS_DIR="{{ .chezmoi.homeDir }}/Library/Application\ Support/Code/User"
 if [ -d "${VSCODE_PREFS_DIR}" ]; then
     rm -f "${VSCODE_PREFS_DIR}/settings.json"
-    ln -svfh {{ .chezmoi.homeDir }}/.config/.vscode "${VSCODE_PREFS_DIR}/settings.json"
+    ln -svfh {{ .chezmoi.homeDir }}/.config/VSCode.json "${VSCODE_PREFS_DIR}/settings.json"
 fi
 
 # Symlink Dropbox folders into ~/Documents
