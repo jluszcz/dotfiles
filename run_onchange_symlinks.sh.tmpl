@@ -22,6 +22,12 @@ if [ -d {{ .chezmoi.homeDir }}/Dropbox ]; then
     ln -svfh {{ .chezmoi.homeDir }}/Dropbox/Money {{ .chezmoi.homeDir }}/Documents/
 fi
 
+# Symlink oh-my-zsh theme
+THEME_DIR="{{ .chezmoi.homeDir }}/.oh-my-zsh/custom/themes"
+if [ -d "${THEME_DIR}" ]; then
+    ln -svfh {{ .chezmoi.homeDir }}/.config/gallifrey-custom.zsh-theme "${THEME_DIR}"/
+fi
+
 # Symlink binaries
 TODOER_BIN="{{ .chezmoi.homeDir }}/Documents/Programs/todoer/target/release/todoer"
 if [ -f "${TODOER_BIN}" ]; then
