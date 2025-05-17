@@ -12,6 +12,9 @@
 [color]
 	ui = true
 
+[format]
+	pretty = commit %C(blue)%H%C(reset)%nAuthor: %an <%ae>%nDate:   %ad%n%n    %s%n
+
 [init]
 	templateDir = {{ .chezmoi.homeDir }}/.git-templates/git-secrets
 	defaultBranch = main
