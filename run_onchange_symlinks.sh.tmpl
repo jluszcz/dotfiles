@@ -22,6 +22,13 @@ if [ -d {{ .chezmoi.homeDir }}/Dropbox ]; then
     ln -svfh {{ .chezmoi.homeDir }}/Dropbox/Money {{ .chezmoi.homeDir }}/Documents/
 fi
 
+# Copy Obsidian files into ~/Dropbox
+if [ -d {{ .chezmoi.homeDir }}/Dropbox ]; then
+    mkdir -p {{ .chezmoi.homeDir }}/Dropbox/Obsidian/Templates
+    rm -f {{ .chezmoi.homeDir }}/Dropbox/Obsidian/Templates/Daily\ Template.md
+    cp {{ .chezmoi.homeDir }}/.obsidian/Daily\ Template.md {{ .chezmoi.homeDir }}/Dropbox/Obsidian/Templates/
+fi
+
 # Symlink oh-my-zsh theme
 THEME_DIR="{{ .chezmoi.homeDir }}/.oh-my-zsh/custom/themes"
 if [ -d "${THEME_DIR}" ]; then
