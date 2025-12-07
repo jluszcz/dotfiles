@@ -52,8 +52,10 @@ alias ll='ls -lh'
 alias src='source {{ .chezmoi.homeDir }}/.zshrc'
 alias tf=terraform
 
+# Rust
 if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     source "{{ .chezmoi.homeDir }}/.cargo/env"
+    alias cgo='cargo build; cargo test; cargo clippy -- -D warnings'
 fi
 
 {{ if eq .chezmoi.os "darwin" }}
