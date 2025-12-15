@@ -150,3 +150,4 @@ When multiple valid approaches exist, choose based on:
 **NEVER**:
 - Use `--no-verify` to bypass commit hooks
 - Make assumptions - verify with existing code
+- Amend existing commits
