@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -e
+set -u
+set -o pipefail
+
+URL="http://fvonline-db.bplaced.net/fv_download.php?lang=eng"
+DEST_DIR="{{ .chezmoi.homeDir }}/Library/MakeMKV"
+TEMP_DIR=$(mktemp -d)
+
+cleanup() {
+  rm -rf "$TEMP_DIR"
+}
+trap cleanup EXIT
+
+echo "Downloading MakeMKV keys..."
+curl -L -o "$TEMP_DIR/keys.zip" "$URL"
+
+echo "Extracting archive..."
+unzip -q "$TEMP_DIR/keys.zip" -d "$TEMP_DIR"
+
+echo "Installing keydb.cfg..."
+mkdir -p "$DEST_DIR"
+cp "$TEMP_DIR/keydb.cfg" "$DEST_DIR/keydb.cfg"
+
+echo "✓ MakeMKV keys updated successfully!"
+echo "  Installed to: $DEST_DIR/keydb.cfg"
