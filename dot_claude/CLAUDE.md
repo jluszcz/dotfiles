@@ -136,6 +136,8 @@ When multiple valid approaches exist, choose based on:
 - Clear test names describing scenario
 - Use existing test utilities/helpers
 - Tests should be deterministic
+- For Javascript projects, use vitest
+- For Java projects, use JUnit5
 
 ## Important Reminders
 
