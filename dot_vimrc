@@ -4,3 +4,4 @@
 :set smartindent
 :set tabstop=4
 :syntax on
+command! Fup 2,$s/^pick /f /gc in .vimrc
