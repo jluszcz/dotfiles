@@ -1,6 +1,4 @@
 #!/usr/bin/env sh
 
-{{ if eq .chezmoi.os "darwin" }}
 # Brewfile hash: {{ include "dot_config/Brewfile" | sha256sum }}
 brew bundle --verbose --file={{ joinPath .chezmoi.homeDir ".config" "Brewfile" | quote }}
-{{ end }}
