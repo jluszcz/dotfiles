@@ -2,9 +2,21 @@
 README.md
 
 {{ if ne .chezmoi.os "darwin" }}
-dot_bin/brewdump
-dot_bin/makemkv-keys
-dot_config/Brewfile
-dot_config/iTerm2.json
-dot_config/Sublime.json
+.bin/brewdump
+.bin/makemkv-sync
+.config/Brewfile
+.config/iTerm2.json
+.config/Sublime.json
+.obsidian/
+{{ end }}
+
+{{ if eq .chezmoi.hostname "Synology" }}
+.aws/
+.zshrc
+{{ end }}
+
+{{ if ne .chezmoi.hostname "Synology" }}
+.config/rclone/
+.profile
+.tmux.conf
 {{ end }}

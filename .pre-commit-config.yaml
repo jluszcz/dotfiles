@@ -11,6 +11,4 @@ repos:
         args:
             - --allow-missing-credentials
     -   id: end-of-file-fixer
-    -   id: file-contents-sorter
-        files: ^(dot_vimrc)$
     -   id: trailing-whitespace
