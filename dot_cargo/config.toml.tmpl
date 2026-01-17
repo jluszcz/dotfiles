@@ -1,6 +1,6 @@
 [build]
-{{- if eq .chezmoi.os "darwin" -}}
+{{- if eq .chezmoi.os "darwin" }}
 rustc-wrapper = "/opt/homebrew/bin/sccache"
-{{- else -}}
+{{- else }}
 rustc-wrapper = "/usr/local/bin/sccache"
-{{- end -}}
+{{- end }}
