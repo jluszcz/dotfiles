@@ -2,6 +2,12 @@
 {{- $aws_region := promptStringOnce . "aws_region" "Default AWS Region" -}}
 {{- $aws_sso_url := promptStringOnce . "aws_sso_url" "AWS SSO URL" -}}
 {{- $aws_sso_account_id := promptStringOnce . "aws_sso_account_id" "AWS SSO Account ID" -}}
+
+{{- if eq .chezmoi.hostname "Synology" }}
+# Synology mounts /tmp with noexec, use home directory instead
+tempDir = "{{ .chezmoi.homeDir }}/.cache/chezmoi/tmp"
+{{- end }}
+
 [data]
 email = {{ $email | quote }}
 aws_region = {{ $aws_region | quote }}
