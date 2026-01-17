@@ -2,23 +2,24 @@
 README.md
 
 {{- if ne .chezmoi.os "darwin" }}
-dot_bin/brewdump
-dot_bin/makemkv-sync
-dot_config/Brewfile
-dot_config/iTerm2.json
-dot_config/Sublime.json
-dot_obsidian/
+.bin/brewdump
+.bin/makemkv-sync
+.config/Brewfile
+.config/iTerm2.json
+.config/Sublime.json
+.obsidian/
 run_onchange_brew.sh.tmpl
 run_onchange_symlinks.sh.tmpl
 {{- end }}
 
 {{- if eq .chezmoi.hostname "Synology" }}
-dot_aws/
-dot_zshrc
+.aws/
+.config/gallifrey-custom.zsh-theme
+.zshrc
 {{- end }}
 
 {{- if ne .chezmoi.hostname "Synology" }}
-dot_config/rclone/
-dot_profile
-dot_tmux.conf
+.config/rclone/
+.profile
+.tmux.conf
 {{- end }}
