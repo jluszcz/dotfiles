@@ -9,6 +9,8 @@
       "Bash(show git log)",
       "Bash(show git diff)",
       "Bash(show git branches)",
+      "Bash(run git add)",
+      "Bash(run git commit)",
       "Bash(show current directory)",
       "Bash(show system information)",
       "Bash(show environment variables)",
@@ -25,6 +27,9 @@
       "Bash(run npm test)",
       "mcp__context7__resolve-library-id(resolve library documentation IDs)",
       "mcp__context7__query-docs(query library documentation)"
+    ],
+    "deny": [
+      "Bash(run git push)"
     ]
   },
   "mcpServers": {
