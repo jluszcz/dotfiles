@@ -39,6 +39,8 @@ chezmoi init git@github.com:jluszcz/dotfiles.git
 ```bash
 # install rclone from https://rclone.org/downloads/
 # install tmux from https://github.com/tmux/tmux-builds/releases
+
+mkdir -p ~/.cache/chezmoi/tmp
 # follow instructions at https://www.chezmoi.io/install
 ```
 
