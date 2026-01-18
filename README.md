@@ -34,6 +34,14 @@ rmdir bin
 chezmoi init git@github.com:jluszcz/dotfiles.git
 ```
 
+### Synology
+
+```bash
+# install rclone from https://rclone.org/downloads/
+# install tmux from https://github.com/tmux/tmux-builds/releases
+# follow instructions at https://www.chezmoi.io/install
+```
+
 ## General
 
 ### git-secrets
