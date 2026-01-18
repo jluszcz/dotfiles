@@ -53,5 +53,5 @@ fi
 {{- end }}
 
 {{- if eq .chezmoi.hostname "Synology" }}
-ln -svfh /var/packages/Git/target/bin/git {{ .chezmoi.homeDir }}/.bin/git
+ln -svf /var/packages/Git/target/bin/git {{ .chezmoi.homeDir }}/.bin/git
 {{- end }}
