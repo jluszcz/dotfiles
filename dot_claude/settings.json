@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(list files and directories)",
+      "Bash(search for files)",
+      "Bash(read file contents)",
+      "Bash(search within files)",
+      "Bash(show git status)",
+      "Bash(show git log)",
+      "Bash(show git diff)",
+      "Bash(show git branches)",
+      "Bash(show current directory)",
+      "Bash(show system information)",
+      "Bash(show environment variables)",
+      "Bash(check command location)",
+      "Bash(show process information)",
+      "Bash(show disk usage)",
+      "Bash(list installed packages)",
+      "Bash(show network information)"
+    ]
+  }
+}
