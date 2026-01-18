@@ -16,7 +16,15 @@
       "Bash(show process information)",
       "Bash(show disk usage)",
       "Bash(list installed packages)",
-      "Bash(show network information)"
+      "Bash(show network information)",
+      "Bash(run cargo build)",
+      "Bash(run cargo check)",
+      "Bash(run cargo fmt)",
+      "Bash(run cargo test)",
+      "Bash(run cargo clippy)",
+      "Bash(run npm test)",
+      "mcp__context7__resolve-library-id(resolve library documentation IDs)",
+      "mcp__context7__query-docs(query library documentation)"
     ]
   },
   "mcpServers": {
