@@ -5,7 +5,7 @@
 
 {{- if eq .chezmoi.hostname "Synology" }}
 # Synology mounts /tmp with noexec, use home directory instead
-tempDir = "{{ .chezmoi.homeDir }}/.cache/chezmoi/tmp"
+scriptTempDir = "{{ .chezmoi.homeDir }}/.cache/chezmoi/tmp"
 {{- end }}
 
 [data]
