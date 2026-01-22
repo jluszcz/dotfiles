@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Try to list tmux sessions
+if ! sessions=$(tmux list-sessions 2>/dev/null); then
+    # No tmux server running - start new session
+    exec tmux
+fi
+
+# Count sessions
+session_count=$(echo "$sessions" | wc -l | tr -d ' ')
+
+if [ "$session_count" -eq 1 ]; then
+    # Exactly one session - attach to it
+    exec tmux attach -t0
+elif [ "$session_count" -eq 0 ]; then
+    # No sessions (shouldn't happen if list-sessions succeeded, but handle it)
+    exec tmux
+else
+    # Multiple sessions - show error
+    echo "Error: Multiple tmux sessions found:" >&2
+    echo "$sessions" >&2
+    exit 1
+fi

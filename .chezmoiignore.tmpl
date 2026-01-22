@@ -17,6 +17,7 @@ README.md
 {{- end }}
 
 {{- if ne .chezmoi.hostname "Synology" }}
+.bin/tmux-attach
 .config/rclone/
 .profile
 .tmux.conf
