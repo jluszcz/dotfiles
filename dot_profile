@@ -2,4 +2,5 @@ export PATH=$HOME/.bin:$PATH
 
 eval $(dircolors $HOME/.dircolors)
 
+alias rc="rclone sync /volume1/Plex/Library s3-media:jluszcz-physical-media --exclude .DS_Store --exclude '@eaDir/**' --progress"
 alias t='tmux-attach'
