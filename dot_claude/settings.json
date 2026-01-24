@@ -1,35 +1,25 @@
 {
   "permissions": {
     "allow": [
-      "Bash(list files and directories)",
-      "Bash(search for files)",
-      "Bash(read file contents)",
-      "Bash(search within files)",
-      "Bash(show git status)",
-      "Bash(show git log)",
-      "Bash(show git diff)",
-      "Bash(show git branches)",
-      "Bash(run git add)",
-      "Bash(run git commit)",
-      "Bash(show current directory)",
-      "Bash(show system information)",
-      "Bash(show environment variables)",
-      "Bash(check command location)",
-      "Bash(show process information)",
-      "Bash(show disk usage)",
-      "Bash(list installed packages)",
-      "Bash(show network information)",
-      "Bash(run cargo build)",
-      "Bash(run cargo check)",
-      "Bash(run cargo fmt)",
-      "Bash(run cargo test)",
-      "Bash(run cargo clippy)",
-      "Bash(run npm test)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git branch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(cargo build:*)",
+      "Bash(cargo check:*)",
+      "Bash(cargo fmt:*)",
+      "Bash(cargo test:*)",
+      "Bash(cargo test:*)",
+      "Bash(cargo clippy:*)",
       "mcp__context7__resolve-library-id",
       "mcp__context7__query-docs"
     ],
     "deny": [
-      "Bash(run git push)"
+      "Bash(git push:*)"
     ]
   },
   "mcpServers": {

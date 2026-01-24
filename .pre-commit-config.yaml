@@ -4,7 +4,6 @@ repos:
     hooks:
     -   id: check-merge-conflict
     -   id: check-json
-        files: ^(\.chezmoiignore|.*gitignore|dot_vimrc)$
     -   id: check-toml
     -   id: check-yaml
     -   id: detect-aws-credentials
