@@ -63,7 +63,7 @@ alias tf=terraform
 # Rust
 if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     source "{{ .chezmoi.homeDir }}/.cargo/env"
-    alias cball='cargo build; cargo test; cargo clippy -- -D warnings'
+    alias cball='cargo build; cargo test; cargo fmt; cargo clippy -- -D warnings'
     alias cbuild='cargo build'
     alias ctest='cargo test'
     alias cclip='cargo clippy -- -D warnings'
