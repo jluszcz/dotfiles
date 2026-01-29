@@ -1,6 +1,24 @@
 #!/usr/bin/env sh
 
-set -e
+skip_errors=false
+
+# Parse flags
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -s|--skip-errors)
+            skip_errors=true
+            shift
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+# Exit on error unless skip_errors flag is set
+if [ "$skip_errors" = false ]; then
+    set -e
+fi
 
 for f in *; do
     if [ ! -d "$f" ]; then
@@ -9,6 +27,10 @@ for f in *; do
 
     echo "$f"
     pushd "$f" > /dev/null
-    "$@"
+    if [ "$skip_errors" = true ]; then
+        "$@" || echo "  (failed, continuing...)"
+    else
+        "$@"
+    fi
     popd > /dev/null
 done
