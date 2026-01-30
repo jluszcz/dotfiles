@@ -105,4 +105,5 @@ alias dequar="xattr -d com.apple.quarantine"
 
 export MANPATH="/usr/local/man:$MANPATH"
 
+export PATH={{ .chezmoi.homeDir }}/.local/bin:$PATH
 export PATH={{ .chezmoi.homeDir }}/.bin:$PATH
