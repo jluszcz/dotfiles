@@ -9,6 +9,16 @@ while [ $# -gt 0 ]; do
             skip_errors=true
             shift
             ;;
+        -h|--help)
+            echo "Usage: all [-s|--skip-errors] <command> [args...]"
+            echo ""
+            echo "Run a command in each subdirectory of the current directory."
+            echo ""
+            echo "Options:"
+            echo "  -s, --skip-errors  Continue to next directory if command fails"
+            echo "  -h, --help         Show this help message"
+            exit 0
+            ;;
         *)
             break
             ;;
