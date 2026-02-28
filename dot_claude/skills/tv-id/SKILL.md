@@ -56,7 +56,7 @@ Always pass the **absolute path** to the video file so no `cd` is needed:
 **End credits** (production codes, copyright cards):
 ```bash
 python3 ${CLAUDE_PLUGIN_ROOT}/skills/tv-id/scripts/extract_frames.py \
-  "<target_dir>/<video_file>" --end-minutes 0.5
+  "<target_dir>/<video_file>" --end-minutes 0.17
 ```
 
 **Opening credits** (written-by and directed-by title cards):
@@ -151,7 +151,7 @@ Example: `The Office - S08E03 - Lotto.mkv`
 
 ## Tips for Shows
 
-- Production codes at end of credits: look for a small card near the very end (last 30 seconds)
+- Production codes at end of credits: look for a small card near the very end (last 10 seconds). If no production code card is visible in the extracted frames, assume there is none — do not extract additional frames looking for it.
 - Written/directed cards: usually appear in the first half of the episode as white text over images
 
 ## Handling Ambiguity
