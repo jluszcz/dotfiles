@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SYNOLOGY="jluszcz@synology.local"
+PLEX_BASE="/volume1/Plex/Library"
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $(basename "$0") <directory>" >&2
+  exit 1
+fi
+
+DIR="${1%/}"
+
+if [[ ! -d "$DIR" ]]; then
+  echo "Error: '$DIR' is not a directory." >&2
+  exit 1
+fi
+
+echo "Media type:"
+echo "  1) Movies"
+echo "  2) TV Shows"
+read -rp "Choice [1/2]: " media_choice
+
+case "$media_choice" in
+  1|[Mm]*)
+    TARGET="$PLEX_BASE/Movies"
+    ;;
+  2|[Tt]*)
+    read -rp "Show name: " show_name
+    read -rp "Season number: " season_num
+    season_padded=$(printf "%02d" "$season_num")
+    TARGET="$PLEX_BASE/TV Shows/$show_name/Season $season_padded"
+    ;;
+  *)
+    echo "Error: Invalid choice." >&2
+    exit 1
+    ;;
+esac
+
+echo ""
+echo "Target: $SYNOLOGY:$TARGET/"
+echo ""
+
+shopt -s nullglob
+mkv_files=("$DIR"/*.mkv)
+
+if [[ ${#mkv_files[@]} -eq 0 ]]; then
+  echo "No .mkv files found in '$DIR'." >&2
+  exit 1
+fi
+
+for f in "${mkv_files[@]}"; do
+  rsync -avz --progress --protect-args "$f" "$SYNOLOGY:$TARGET/"
+  rm "$f"
+done
+
+read -rp "Delete directory '$DIR'? [y/N]: " delete_dir
+if [[ "$delete_dir" =~ ^[Yy]$ ]]; then
+  rmdir "$DIR" || echo "Warning: Directory not empty, skipping removal."
+fi
+
+echo "Done."
