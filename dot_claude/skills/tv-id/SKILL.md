@@ -39,7 +39,7 @@ List all `.mkv`, `.mp4`, `.avi`, `.m4v` files in `<target_dir>`. Note the count 
 Run the query script to fetch episode titles, writers, directors, and production codes for the season:
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/tv-episode-identifier/scripts/query_tmdb.py \
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/tv-id/scripts/query_tmdb.py \
   "<show_name>" <season_number> --api-key "$TMDB_API_KEY"
 ```
 
@@ -55,13 +55,13 @@ Always pass the **absolute path** to the video file so no `cd` is needed:
 
 **End credits** (production codes, copyright cards):
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/tv-episode-identifier/scripts/extract_frames.py \
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/tv-id/scripts/extract_frames.py \
   "<target_dir>/<video_file>" --end-minutes 0.5
 ```
 
 **Opening credits** (written-by and directed-by title cards):
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/tv-episode-identifier/scripts/extract_frames.py \
+python3 ${CLAUDE_PLUGIN_ROOT}/skills/tv-id/scripts/extract_frames.py \
   "<target_dir>/<video_file>" --opening-minutes 5
 ```
 
