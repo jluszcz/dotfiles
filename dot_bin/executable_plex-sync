@@ -54,9 +54,6 @@ for f in "${mkv_files[@]}"; do
   rm "$f"
 done
 
-read -rp "Delete directory '$DIR'? [y/N]: " delete_dir
-if [[ "$delete_dir" =~ ^[Yy]$ ]]; then
-  rmdir "$DIR" || echo "Warning: Directory not empty, skipping removal."
-fi
+rmdir "$DIR" || echo "Warning: Directory not empty, skipping removal."
 
 echo "Done."
