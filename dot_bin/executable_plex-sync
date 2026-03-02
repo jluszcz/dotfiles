@@ -4,9 +4,37 @@ set -euo pipefail
 SYNOLOGY="jluszcz@synology.local"
 PLEX_BASE="/volume1/Plex/Library"
 
-if [[ $# -ne 1 ]]; then
-  echo "Usage: $(basename "$0") <directory>" >&2
+usage() {
+  echo "Usage: $(basename "$0") [-c config_file] [-t movies|tv] [-n show_name] [-s season] <directory>" >&2
+  echo "" >&2
+  echo "Options:" >&2
+  echo "  -t movies|tv          Media type" >&2
+  echo "  -n <name>             Show name (TV only)" >&2
+  echo "  -s <number>           Season number (TV only)" >&2
+  echo "  -c <config_file>      Config file (key=value format)" >&2
+  echo "" >&2
+  echo "A .plex-sync file in <directory> is used automatically if present." >&2
+  echo "Command-line options take precedence over the config file." >&2
   exit 1
+}
+
+CONFIG_FILE=""
+OPT_MEDIA_TYPE=""
+OPT_SHOW_NAME=""
+OPT_SEASON=""
+while getopts ":c:t:n:s:" opt; do
+  case "$opt" in
+    c) CONFIG_FILE="$OPTARG" ;;
+    t) OPT_MEDIA_TYPE="$OPTARG" ;;
+    n) OPT_SHOW_NAME="$OPTARG" ;;
+    s) OPT_SEASON="$OPTARG" ;;
+    *) usage ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [[ $# -ne 1 ]]; then
+  usage
 fi
 
 DIR="${1%/}"
@@ -16,18 +44,66 @@ if [[ ! -d "$DIR" ]]; then
   exit 1
 fi
 
-echo "Media type:"
-echo "  1) Movies"
-echo "  2) TV Shows"
-read -rp "Choice [1/2]: " media_choice
+# Auto-discover config file in the directory if not explicitly provided
+if [[ -z "$CONFIG_FILE" && -f "$DIR/.plex-sync" ]]; then
+  CONFIG_FILE="$DIR/.plex-sync"
+fi
+
+# Load config file values if present
+MEDIA_TYPE=""
+SHOW_NAME=""
+SEASON=""
+if [[ -n "$CONFIG_FILE" ]]; then
+  if [[ ! -f "$CONFIG_FILE" ]]; then
+    echo "Error: Config file '$CONFIG_FILE' not found." >&2
+    exit 1
+  fi
+  while IFS='=' read -r key value || [[ -n "$key" ]]; do
+    # Strip comments and whitespace
+    key="${key%%#*}"
+    key="${key// /}"
+    value="${value%%#*}"
+    value="${value# }"
+    value="${value% }"
+    [[ -z "$key" ]] && continue
+    case "$key" in
+      MEDIA_TYPE) MEDIA_TYPE="$value" ;;
+      SHOW_NAME)  SHOW_NAME="$value" ;;
+      SEASON)     SEASON="$value" ;;
+    esac
+  done < "$CONFIG_FILE"
+  echo "Loaded config: $CONFIG_FILE"
+fi
+
+# Command-line options take precedence over config file
+[[ -n "$OPT_MEDIA_TYPE" ]] && MEDIA_TYPE="$OPT_MEDIA_TYPE"
+[[ -n "$OPT_SHOW_NAME" ]]  && SHOW_NAME="$OPT_SHOW_NAME"
+[[ -n "$OPT_SEASON" ]]     && SEASON="$OPT_SEASON"
+
+if [[ -z "$MEDIA_TYPE" ]]; then
+  echo "Media type:"
+  echo "  1) Movies"
+  echo "  2) TV Shows"
+  read -rp "Choice [1/2]: " media_choice
+else
+  media_choice="$MEDIA_TYPE"
+fi
 
 case "$media_choice" in
   1|[Mm]*)
     TARGET="$PLEX_BASE/Movies"
     ;;
   2|[Tt]*)
-    read -rp "Show name: " show_name
-    read -rp "Season number: " season_num
+    if [[ -z "$SHOW_NAME" ]]; then
+      read -rp "Show name: " show_name
+    else
+      show_name="$SHOW_NAME"
+    fi
+    if [[ -z "$SEASON" ]]; then
+      read -rp "Season number: " season_num
+    else
+      season_num="$SEASON"
+    fi
     season_padded=$(printf "%02d" "$season_num")
     TARGET="$PLEX_BASE/TV Shows/$show_name/Season $season_padded"
     ;;
