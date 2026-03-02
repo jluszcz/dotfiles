@@ -1,7 +1,8 @@
 window-width = 130
-window-height = 80
+window-height = 40
 
 theme = Bluloco Light
 font-family = Menlo
+font-size = 14
 
 shell-integration-features = ssh-terminfo
