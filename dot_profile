@@ -1,5 +1,7 @@
 export PATH=$HOME/.bin:$PATH
 
+PS1='\[\033[1m\][Synology]\[\033[0m\] \W » '
+
 eval $(dircolors $HOME/.dircolors)
 
 alias l=ls
