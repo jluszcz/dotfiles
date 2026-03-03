@@ -1,8 +1,7 @@
 export PATH=$HOME/.bin:$PATH
 
 short_pwd() {
-    local pwd="${PWD/#$HOME/~}"
-    printf '%s' "$pwd" | awk -F'/' 'NF>2{print $(NF-1)"/"$NF; next} {print}'
+    echo "$PWD" | sed "s|^$HOME|~|" | awk -F'/' 'NF>2{print $(NF-1)"/"$NF; next} {print}'
 }
 
 PS1='\[\033[1m\][Synology]\[\033[0m\] $(short_pwd) » '
