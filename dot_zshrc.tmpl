@@ -67,6 +67,8 @@ if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     alias ctest='cargo test --all-features'
     alias cclip='cargo clippy --all-features -- -D warnings'
     alias cball='cbuild; ctest; cclip; cargo fmt'
+
+    alias rup='git switch -c Deps -t origin/main; cargo update; cargo outdated --root-deps-only; cball; git push origin HEAD'
 fi
 
 {{- if eq .chezmoi.os "darwin" }}
