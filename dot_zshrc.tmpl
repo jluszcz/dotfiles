@@ -63,10 +63,19 @@ alias tf=terraform
 # Rust
 if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     source "{{ .chezmoi.homeDir }}/.cargo/env"
-    alias cbuild='cargo build --all-features'
-    alias ctest='cargo test --all-features'
-    alias cclip='cargo clippy --all-features -- -D warnings'
-    alias cball='cbuild; ctest; cclip; cargo fmt'
+
+    cbuild() { cargo build --all-features }
+
+    ctest() { cargo test --all-features }
+
+    cclip() { cargo clippy --all-features -- -D warnings }
+
+    cball() {
+        cbuild
+        ctest
+        cclip
+        cargo fmt
+    }
 
     rup() {
         git switch main && git pull && git switch -c Deps -t origin/main && cargo update && cargo outdated --root-deps-only || return 1
@@ -76,7 +85,7 @@ if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
         cball && g commit -a -m "Update dependencies" && git push origin HEAD
     }
 
-    alias grmdeps='git switch main; git pull; git branch -d Deps'
+    alias grmdeps='git switch main; git pull; git branch -D Deps'
 fi
 
 {{- if eq .chezmoi.os "darwin" }}
