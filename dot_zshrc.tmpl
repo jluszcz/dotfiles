@@ -68,7 +68,13 @@ if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     alias cclip='cargo clippy --all-features -- -D warnings'
     alias cball='cbuild; ctest; cclip; cargo fmt'
 
-    alias rup='git switch main; git pull; git switch -c Deps -t origin/main; cargo update; cargo outdated --root-deps-only; cball; g commit -a -m "Update dependencies"; git push origin HEAD'
+    rup() {
+        git switch main && git pull && git switch -c Deps -t origin/main && cargo update && cargo outdated --root-deps-only || return 1
+        if git diff --quiet; then
+            return 0
+        fi
+        cball && g commit -a -m "Update dependencies" && git push origin HEAD
+    }
 
     alias grmdeps='git switch main; git pull; git branch -d Deps'
 fi
