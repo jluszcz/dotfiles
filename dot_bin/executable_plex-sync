@@ -5,13 +5,14 @@ SYNOLOGY="jluszcz@synology.local"
 PLEX_BASE="/volume1/Plex/Library"
 
 usage() {
-  echo "Usage: $(basename "$0") [-c config_file] [-t movies|tv] [-n show_name] [-s season] <directory>" >&2
+  echo "Usage: $(basename "$0") [-c config_file] [-t movies|tv] [-n show_name] [-s season] [-o] <directory>" >&2
   echo "" >&2
   echo "Options:" >&2
   echo "  -t movies|tv          Media type" >&2
   echo "  -n <name>             Show name (TV only)" >&2
   echo "  -s <number>           Season number (TV only)" >&2
   echo "  -c <config_file>      Config file (key=value format)" >&2
+  echo "  -o                    Overwrite: delete existing remote file before syncing" >&2
   echo "" >&2
   echo "A .plex-sync file in <directory> is used automatically if present." >&2
   echo "Command-line options take precedence over the config file." >&2
@@ -22,12 +23,14 @@ CONFIG_FILE=""
 OPT_MEDIA_TYPE=""
 OPT_SHOW_NAME=""
 OPT_SEASON=""
-while getopts ":c:t:n:s:" opt; do
+OPT_OVERWRITE=""
+while getopts ":c:t:n:s:o" opt; do
   case "$opt" in
     c) CONFIG_FILE="$OPTARG" ;;
     t) OPT_MEDIA_TYPE="$OPTARG" ;;
     n) OPT_SHOW_NAME="$OPTARG" ;;
     s) OPT_SEASON="$OPTARG" ;;
+    o) OPT_OVERWRITE=1 ;;
     *) usage ;;
   esac
 done
@@ -126,6 +129,9 @@ if [[ ${#mkv_files[@]} -eq 0 ]]; then
 fi
 
 for f in "${mkv_files[@]}"; do
+  if [[ -n "$OPT_OVERWRITE" ]]; then
+    ssh "$SYNOLOGY" "rm -f '$TARGET/$(basename "$f")'"
+  fi
   rsync -avz --progress --protect-args "$f" "$SYNOLOGY:$TARGET/"
   rm "$f"
 done
