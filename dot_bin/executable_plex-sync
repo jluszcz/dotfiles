@@ -5,10 +5,11 @@ SYNOLOGY="jluszcz@synology.local"
 PLEX_BASE="/volume1/Plex/Library"
 
 usage() {
-  echo "Usage: $(basename "$0") [-c config_file] [-t movies|tv] [-n show_name] [-s season] [-o] <directory>" >&2
+  echo "Usage: $(basename "$0") [-c config_file] [-m|-t] [-n show_name] [-s season] [-o] <directory>" >&2
   echo "" >&2
   echo "Options:" >&2
-  echo "  -t movies|tv          Media type" >&2
+  echo "  -m                    Movies" >&2
+  echo "  -t                    TV Shows" >&2
   echo "  -n <name>             Show name (TV only)" >&2
   echo "  -s <number>           Season number (TV only)" >&2
   echo "  -c <config_file>      Config file (key=value format)" >&2
@@ -24,10 +25,11 @@ OPT_MEDIA_TYPE=""
 OPT_SHOW_NAME=""
 OPT_SEASON=""
 OPT_OVERWRITE=""
-while getopts ":c:t:n:s:o" opt; do
+while getopts ":c:mtn:s:o" opt; do
   case "$opt" in
     c) CONFIG_FILE="$OPTARG" ;;
-    t) OPT_MEDIA_TYPE="$OPTARG" ;;
+    m) OPT_MEDIA_TYPE="movies" ;;
+    t) OPT_MEDIA_TYPE="tv" ;;
     n) OPT_SHOW_NAME="$OPTARG" ;;
     s) OPT_SEASON="$OPTARG" ;;
     o) OPT_OVERWRITE=1 ;;
