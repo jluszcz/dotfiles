@@ -6,6 +6,7 @@ permissions:
     - Agent
     - Bash(git log*)
     - Bash(git rev-parse*)
+    - Bash(git diff*)
 ---
 
 # Code Review
@@ -28,10 +29,11 @@ Dispatch code-reviewer subagent to catch issues before they cascade. The reviewe
 
 ## How to Request
 
-**1. Get git SHAs:**
+**1. Get git SHAs — run each command separately (no `$()` substitution):**
 ```bash
-BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
-HEAD_SHA=$(git rev-parse HEAD)
+git rev-parse origin/main   # → BASE_SHA
+git rev-parse HEAD           # → HEAD_SHA
+git log --oneline origin/main..HEAD
 ```
 
 **2. Dispatch the `code-reviewer` agent:**
@@ -58,8 +60,8 @@ Use the Agent tool with `subagent_type: code-reviewer`, passing the filled templ
 
 You: Let me request code review before proceeding.
 
-BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
-HEAD_SHA=$(git rev-parse HEAD)
+git log --oneline | grep "Task 1"   # → grab BASE_SHA from output
+git rev-parse HEAD                   # → HEAD_SHA
 
 [Dispatch code-reviewer agent]
   WHAT_WAS_IMPLEMENTED: Verification and repair functions for conversation index
