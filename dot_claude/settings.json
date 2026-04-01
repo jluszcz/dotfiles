@@ -1,6 +1,5 @@
 {
   "permissions": {
-    "defaultMode": "auto",
     "allow": [
       "Bash(ls:*)",
       "Bash(grep:*)",
@@ -38,6 +37,5 @@
   },
   "enabledPlugins": {
     "rust-analyzer-lsp@claude-plugins-official": true
-  },
-  "skipAutoPermissionPrompt": true
+  }
 }
