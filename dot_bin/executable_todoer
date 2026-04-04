@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
+# shellcheck source=dot_config/rustbin
 . "$HOME/.config/rustbin"
 rustbin "$HOME/Documents/Programs/todoer" todoer "$@"

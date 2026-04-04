@@ -15,4 +15,7 @@ repos:
     rev: v0.10.0.1
     hooks:
     -   id: shellcheck
+        types: [file]
+        files: 'dot_bin/executable_|dot_config/rustbin|run_onchange.*\.sh'
         exclude: '\.tmpl$'
+        args: [-x]

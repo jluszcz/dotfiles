@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 # Usage: rustbin <project_dir> <binary_name> [args...]
 rustbin() {
     location="$1"
