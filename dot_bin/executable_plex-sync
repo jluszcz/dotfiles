@@ -132,6 +132,7 @@ fi
 
 for f in "${mkv_files[@]}"; do
   if [[ -n "$OPT_OVERWRITE" ]]; then
+    # shellcheck disable=SC2029  # local expansion of basename is intentional
     ssh "$SYNOLOGY" "rm -f '$TARGET/$(basename "$f")'"
   fi
   rsync -avz --progress --protect-args "$f" "$SYNOLOGY:$TARGET/"
