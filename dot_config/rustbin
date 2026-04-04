@@ -1,0 +1,18 @@
+# Usage: rustbin <project_dir> <binary_name> [args...]
+rustbin() {
+    location="$1"
+    binary="$2"
+    shift 2
+
+    release_bin="${location}/target/release/${binary}"
+    debug_bin="${location}/target/debug/${binary}"
+
+    if [ -f "${release_bin}" ]; then
+        exec "${release_bin}" "$@"
+    elif [ -f "${debug_bin}" ]; then
+        exec "${debug_bin}" "$@"
+    else
+        echo "Binary '${binary}' not found. Build the project with 'cargo build [--release]' in ${location}" >&2
+        exit 1
+    fi
+}

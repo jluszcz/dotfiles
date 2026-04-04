@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+. "$HOME/.config/rustbin"
+rustbin "$HOME/Documents/Programs/todoer" todoer "$@"

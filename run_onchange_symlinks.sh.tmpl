@@ -34,22 +34,6 @@ THEME_DIR="{{ .chezmoi.homeDir }}/.oh-my-zsh/custom/themes"
 if [ -d "${THEME_DIR}" ]; then
     ln -svfh {{ .chezmoi.homeDir }}/.config/gallifrey-custom.zsh-theme "${THEME_DIR}"/
 fi
-
-# Symlink binaries
-TODOER_BIN="{{ .chezmoi.homeDir }}/Documents/Programs/todoer/target/release/todoer"
-if [ -f "${TODOER_BIN}" ]; then
-    ln -svfh "${TODOER_BIN}" {{ .chezmoi.homeDir }}/.bin/
-fi
-
-RENAMER_BIN="{{ .chezmoi.homeDir }}/Documents/Programs/Renamer/target/release/renamer"
-if [ -f "${RENAMER_BIN}" ]; then
-    ln -svfh "${RENAMER_BIN}" {{ .chezmoi.homeDir }}/.bin/
-fi
-
-SORTER_BIN="{{ .chezmoi.homeDir }}/Documents/Programs/Sortie/target/release/sortie"
-if [ -f "${SORTER_BIN}" ]; then
-    ln -svfh "${SORTER_BIN}" {{ .chezmoi.homeDir }}/.bin/
-fi
 {{- end }}
 
 {{- if eq .chezmoi.hostname "Synology" }}
