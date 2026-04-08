@@ -130,6 +130,9 @@ if [[ ${#mkv_files[@]} -eq 0 ]]; then
   exit 1
 fi
 
+# shellcheck disable=SC2029  # local expansion of TARGET is intentional
+ssh "$SYNOLOGY" "mkdir -p '$TARGET'"
+
 for f in "${mkv_files[@]}"; do
   if [[ -n "$OPT_OVERWRITE" ]]; then
     # shellcheck disable=SC2029  # local expansion of basename is intentional
