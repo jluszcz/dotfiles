@@ -83,9 +83,7 @@ if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
             return 0
         fi
 
-        cball && g commit -a -m "Update dependencies" && git push origin HEAD
-
-        echo -e "\nRun 'drup' to delete the Deps branch once merged\n"
+        cball && g commit -a -m "Update dependencies" && git push origin HEAD && gh pr create --title "Update dependencies" --body "" --base main --head Deps
     }
 
     alias drup='git switch main; git pull; git branch -D Deps'
