@@ -26,6 +26,10 @@
       "Bash(git push:*)"
     ]
   },
+  "enabledPlugins": {
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "jluszcz@jluszcz": true
+  },
   "mcpServers": {
     "context7": {
       "command": "npx",
@@ -35,8 +39,5 @@
       ]
     }
   },
-  "enabledPlugins": {
-    "rust-analyzer-lsp@claude-plugins-official": true,
-    "jluszcz@jluszcz": true
-  }
+  "theme": "light"
 }
