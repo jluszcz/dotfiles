@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+dir=$(pwd)
+name=$(basename "$dir")
+parent=$(dirname "$dir")
+archive="${parent}/${name}.tar.gz"
+
+echo "Creating ${archive}..."
+tar -czf "$archive" -C "$parent" "$name"
+
+echo ""
+echo "Contents:"
+tar -tzf "$archive"
+
+echo ""
+read -r -p "Delete original directory '${dir}'? [y/N] " confirm || true
+if [[ "$confirm" =~ ^[Yy]$ ]]; then
+    cd "$parent"
+    rm -rf "$dir"
+    echo "Deleted ${dir}"
+fi
