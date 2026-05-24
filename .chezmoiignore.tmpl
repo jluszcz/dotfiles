@@ -22,9 +22,9 @@ README.md
 {{- if eq .chezmoi.hostname "Synology" }}
 .aws/
 .config/gallifrey-custom.zsh-theme
-.zshrc
-.terraformrc
 .terraform.d/
+.terraformrc
+.zshrc
 {{- end }}
 
 {{- if ne .chezmoi.hostname "Synology" }}
