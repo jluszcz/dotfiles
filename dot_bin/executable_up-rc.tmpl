@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ZIP="rclone-current-linux-amd64.zip"
+DEST="{{ .chezmoi.homeDir }}/.bin/rclone"
+
+pushd /tmp
+
+curl -O "https://downloads.rclone.org/$ZIP"
+python3 -c "import zipfile, sys; zipfile.ZipFile(sys.argv[1]).extractall()" "$ZIP"
+
+RCLONE_BIN=$(find . -path "*/rclone-*-linux-amd64/rclone" -type f | head -1)
+chmod 755 "$RCLONE_BIN"
+mv "$RCLONE_BIN" "$DEST"
+
+popd
+
+echo "updated: $($DEST version | head -1)"
