@@ -9,7 +9,8 @@ pushd /tmp
 curl -O "https://downloads.rclone.org/$ZIP"
 python3 -c "import zipfile, sys; zipfile.ZipFile(sys.argv[1]).extractall()" "$ZIP"
 
-RCLONE_BIN=$(find . -path "*/rclone-*-linux-amd64/rclone" -type f | head -1)
+RCLONE_DIR=$(find . -maxdepth 1 -name "rclone-*-linux-amd64" -type d | head -1)
+RCLONE_BIN="$RCLONE_DIR/rclone"
 chmod 755 "$RCLONE_BIN"
 mv "$RCLONE_BIN" "$DEST"
 
