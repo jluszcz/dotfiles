@@ -71,10 +71,7 @@ if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     cclip() { cargo clippy --all-features -- -D warnings }
 
     cball() {
-        cbuild
-        ctest
-        cclip
-        cargo fmt
+        cbuild && ctest && cclip && cargo fmt
     }
 
     rup() {
