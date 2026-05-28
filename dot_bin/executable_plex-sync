@@ -5,7 +5,7 @@ SYNOLOGY="jluszcz@synology.local"
 PLEX_BASE="/volume1/Plex/Library"
 
 usage() {
-  echo "Usage: $(basename "$0") [-c config_file] [-m|-t] [-n show_name] [-s season] [-o] <directory>" >&2
+  echo "Usage: $(basename "$0") [-c config_file] [-m|-t] [-n show_name] [-s season] [-d] [-o] <directory>" >&2
   echo "" >&2
   echo "Options:" >&2
   echo "  -m                    Movies" >&2
@@ -13,6 +13,7 @@ usage() {
   echo "  -n <name>             Show name (TV only)" >&2
   echo "  -s <number>           Season number (TV only)" >&2
   echo "  -c <config_file>      Config file (key=value format)" >&2
+  echo "  -d                    Dry run: print what would be done without transferring" >&2
   echo "  -o                    Overwrite: delete existing remote file before syncing" >&2
   echo "" >&2
   echo "A .plex-sync file in <directory> is used automatically if present." >&2
@@ -24,14 +25,16 @@ CONFIG_FILE=""
 OPT_MEDIA_TYPE=""
 OPT_SHOW_NAME=""
 OPT_SEASON=""
+OPT_DRY_RUN=""
 OPT_OVERWRITE=""
-while getopts ":c:mtn:s:o" opt; do
+while getopts ":c:mtn:s:do" opt; do
   case "$opt" in
     c) CONFIG_FILE="$OPTARG" ;;
     m) OPT_MEDIA_TYPE="movies" ;;
     t) OPT_MEDIA_TYPE="tv" ;;
     n) OPT_SHOW_NAME="$OPTARG" ;;
     s) OPT_SEASON="$OPTARG" ;;
+    d) OPT_DRY_RUN=1 ;;
     o) OPT_OVERWRITE=1 ;;
     *) usage ;;
   esac
@@ -156,6 +159,20 @@ esac
 echo ""
 echo "Target: $SYNOLOGY:$TARGET/"
 echo ""
+
+if [[ -n "$OPT_DRY_RUN" ]]; then
+  echo "[dry run] Would create remote directory: $SYNOLOGY:$TARGET/"
+  for f in "${mkv_files[@]}"; do
+    if [[ -n "$OPT_OVERWRITE" ]]; then
+      echo "[dry run] Would delete: $SYNOLOGY:$TARGET/$(basename "$f")"
+    fi
+    echo "[dry run] Would rsync: $f → $SYNOLOGY:$TARGET/"
+    echo "[dry run] Would delete local: $f"
+  done
+  echo "[dry run] Would remove directory: $DIR"
+  echo "Done (dry run)."
+  exit 0
+fi
 
 # shellcheck disable=SC2029  # local expansion of TARGET is intentional
 ssh "$SYNOLOGY" "mkdir -p '$TARGET'"
