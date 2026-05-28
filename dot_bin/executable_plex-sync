@@ -94,11 +94,46 @@ else
   media_choice="$MEDIA_TYPE"
 fi
 
+shopt -s nullglob
+mkv_files=("$DIR"/*.mkv)
+
+if [[ ${#mkv_files[@]} -eq 0 ]]; then
+  echo "No .mkv files found in '$DIR'." >&2
+  exit 1
+fi
+
 case "$media_choice" in
   1|[Mm]*)
     TARGET="$PLEX_BASE/Movies"
     ;;
   2|[Tt]*)
+    if [[ -z "$SHOW_NAME" || -z "$SEASON" ]]; then
+      detected_show=""
+      detected_season=""
+      all_match=1
+      for f in "${mkv_files[@]}"; do
+        fname="$(basename "$f" .mkv)"
+        if [[ "$fname" =~ ^(.+)\ -\ s([0-9]+)e[0-9]+ ]]; then
+          file_show="${BASH_REMATCH[1]}"
+          file_season=$((10#${BASH_REMATCH[2]}))
+          if [[ -z "$detected_show" ]]; then
+            detected_show="$file_show"
+            detected_season="$file_season"
+          elif [[ "$file_show" != "$detected_show" || "$file_season" != "$detected_season" ]]; then
+            all_match=0
+            break
+          fi
+        else
+          all_match=0
+          break
+        fi
+      done
+      if [[ $all_match -eq 1 && -n "$detected_show" ]]; then
+        [[ -z "$SHOW_NAME" ]] && SHOW_NAME="$detected_show"
+        [[ -z "$SEASON" ]] && SEASON="$detected_season"
+        echo "Detected: $SHOW_NAME, Season $SEASON"
+      fi
+    fi
     if [[ -z "$SHOW_NAME" ]]; then
       read -rp "Show name: " show_name
     else
@@ -121,14 +156,6 @@ esac
 echo ""
 echo "Target: $SYNOLOGY:$TARGET/"
 echo ""
-
-shopt -s nullglob
-mkv_files=("$DIR"/*.mkv)
-
-if [[ ${#mkv_files[@]} -eq 0 ]]; then
-  echo "No .mkv files found in '$DIR'." >&2
-  exit 1
-fi
 
 # shellcheck disable=SC2029  # local expansion of TARGET is intentional
 ssh "$SYNOLOGY" "mkdir -p '$TARGET'"
