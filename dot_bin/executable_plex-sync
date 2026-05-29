@@ -191,4 +191,4 @@ done
 
 rmdir "$DIR" || echo "Warning: Directory not empty, skipping removal."
 
-echo "Done."
+echo "Done - Consider running 'tmclean' to reclaim space"
