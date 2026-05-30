@@ -28,7 +28,8 @@
   },
   "enabledPlugins": {
     "rust-analyzer-lsp@claude-plugins-official": true,
-    "jluszcz@jluszcz": true
+    "jluszcz@jluszcz": true,
+    "skill-creator@claude-plugins-official": true
   },
   "mcpServers": {
     "context7": {
