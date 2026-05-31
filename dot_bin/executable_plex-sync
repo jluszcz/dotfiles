@@ -190,5 +190,3 @@ for f in "${mkv_files[@]}"; do
 done
 
 rmdir "$DIR" || echo "Warning: Directory not empty, skipping removal."
-
-echo "Done - Consider running 'tmclean' to reclaim space"
