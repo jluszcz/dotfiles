@@ -1,5 +1,9 @@
 export PATH=$HOME/.bin:$PATH
 
+if [[ $- =~ i ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_TTY" ]]; then
+  tmux -CC attach-session -t ssh_tmux || tmux -CC new-session -s ssh_tmux
+fi
+
 short_pwd() {
     echo "$PWD" | sed "s|^$HOME|~|" | awk -F'/' 'NF>2{print $(NF-1)"/"$NF; next} {print}'
 }
@@ -12,4 +16,3 @@ alias l=ls
 alias ll='ls -lh'
 
 alias rc="rclone sync /volume1/Plex/Library s3-media:jluszcz-physical-media --exclude .DS_Store --exclude '@eaDir/**' --progress"
-alias t='tmux-attach'
