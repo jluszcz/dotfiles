@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+export TF_VAR_aws_region="us-east-2"
+
+export GOOGLE_SERVICE_ACCOUNT_KEY='{{ onepasswordRead "op://Personal/mbtalerts/account key" }}'
+export TF_VAR_service_acct_key="${GOOGLE_SERVICE_ACCOUNT_KEY}"
+
+export GOOGLE_CALENDAR_IDS='{{ onepasswordRead "op://Personal/mbtalerts/calendar ids" }}'
+export TF_VAR_calendar_ids="${GOOGLE_CALENDAR_IDS}"

@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+export JAKESKY_API_KEY="{{ onepasswordRead "op://Personal/Open Weather/api key" }}"
+export JAKESKY_LATITUDE="{{ onepasswordRead "op://Personal/JakeSky/latitude" }}"
+export JAKESKY_LONGITUDE="{{ onepasswordRead "op://Personal/JakeSky/longitude" }}"
+export JAKESKY_SKILL_ID="{{ onepasswordRead "op://Personal/JakeSky/skill id" }}"
+export JAKESKY_ADDRESS="{{ onepasswordRead "op://Personal/JakeSky/address" }}"
+
+export TF_VAR_jakesky_api_key="$JAKESKY_API_KEY"
+export TF_VAR_jakesky_latitude="$JAKESKY_LATITUDE"
+export TF_VAR_jakesky_longitude="$JAKESKY_LONGITUDE"
+export TF_VAR_jakesky_skill_id="$JAKESKY_SKILL_ID"

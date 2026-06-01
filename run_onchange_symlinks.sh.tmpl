@@ -29,6 +29,33 @@ if [ -d {{ .chezmoi.homeDir }}/Dropbox ]; then
     cp {{ .chezmoi.homeDir }}/.obsidian/Daily\ Template.md {{ .chezmoi.homeDir }}/Dropbox/Obsidian/Templates/
 fi
 
+# Symlink .env files into their projects
+if [ -d {{ .chezmoi.homeDir }}/Documents/Programs/EndTimes ]; then
+    rm -f {{ .chezmoi.homeDir }}/Documents/Programs/EndTimes/.dev.vars
+    ln -svfh {{ .chezmoi.homeDir }}/.config/envrc/endtimes {{ .chezmoi.homeDir }}/Documents/Programs/EndTimes/.dev.vars
+fi
+
+if [ -d {{ .chezmoi.homeDir }}/Documents/Programs/JakeSky-rs ]; then
+    rm -f {{ .chezmoi.homeDir }}/Documents/Programs/JakeSky-rs/.envrc
+    ln -svfh {{ .chezmoi.homeDir }}/.config/envrc/jakesky {{ .chezmoi.homeDir }}/Documents/Programs/JakeSky-rs/.envrc
+fi
+
+if [ -d {{ .chezmoi.homeDir }}/Documents/Programs/LottoCheck ]; then
+    rm -f {{ .chezmoi.homeDir }}/Documents/Programs/LottoCheck/.dev.vars
+    ln -svfh {{ .chezmoi.homeDir }}/.config/envrc/lottocheck {{ .chezmoi.homeDir }}/Documents/Programs/LottoCheck/.dev.vars
+fi
+
+if [ -d {{ .chezmoi.homeDir }}/Documents/Programs/mbtalerts ]; then
+    rm -f {{ .chezmoi.homeDir }}/Documents/Programs/mbtalerts/.envrc
+    ln -svfh {{ .chezmoi.homeDir }}/.config/envrc/mbtalerts {{ .chezmoi.homeDir }}/Documents/Programs/mbtalerts/.envrc
+fi
+
+if [ -d {{ .chezmoi.homeDir }}/Documents/Programs/Seen ]; then
+    rm -f {{ .chezmoi.homeDir }}/Documents/Programs/Seen/.dev.vars
+    ln -svfh {{ .chezmoi.homeDir }}/.config/envrc/seen {{ .chezmoi.homeDir }}/Documents/Programs/Seen/.env
+fi
+# End .env files
+
 # Symlink oh-my-zsh theme
 THEME_DIR="{{ .chezmoi.homeDir }}/.oh-my-zsh/custom/themes"
 if [ -d "${THEME_DIR}" ]; then
