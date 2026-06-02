@@ -1,7 +1,7 @@
 export PATH=$HOME/.bin:$PATH
 
 if [[ $- =~ i ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_TTY" ]]; then
-  tmux -CC attach-session -t ssh_tmux || tmux -CC new-session -s ssh_tmux
+  tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
 fi
 
 short_pwd() {
