@@ -60,6 +60,16 @@ alias gst='git status'
 alias gsw='git switch'
 alias wip="git add . && git commit -a -m '[Work In Progress]' --allow-empty"
 
+# Switch to main, pull, and delete the branch you were on
+gmerge() {
+    local branch
+    branch=$(git symbolic-ref --short HEAD) || return 1
+    if [ "$branch" = "main" ]; then
+        return 0
+    fi
+    git switch main && git pull && git branch -D "$branch"
+}
+
 # Misc.
 alias l=ls
 alias ll='ls -lh'
