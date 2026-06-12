@@ -4,7 +4,7 @@ set -u
 set -o pipefail
 
 URL="http://fvonline-db.bplaced.net/fv_download.php?lang=eng"
-DEST_DIR="{{ .chezmoi.homeDir }}/Library/MakeMKV"
+DEST_DIR="$HOME/Library/MakeMKV"
 TEMP_DIR=$(mktemp -d)
 
 cleanup() {
