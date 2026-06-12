@@ -5,64 +5,64 @@
 SUBLIME_PREFS_DIR="$HOME/Library/Application Support/Sublime Text/Packages/User"
 if [ -d "${SUBLIME_PREFS_DIR}" ]; then
     rm -f "${SUBLIME_PREFS_DIR}/Preferences.sublime-settings"
-    ln -svfh $HOME/.config/Sublime.json "${SUBLIME_PREFS_DIR}/Preferences.sublime-settings"
+    ln -svfh "$HOME/.config/Sublime.json" "${SUBLIME_PREFS_DIR}/Preferences.sublime-settings"
 fi
 
 VSCODE_PREFS_DIR="$HOME/Library/Application Support/Code/User"
 if [ -d "${VSCODE_PREFS_DIR}" ]; then
     rm -f "${VSCODE_PREFS_DIR}/settings.json"
-    ln -svfh $HOME/.config/VSCode.json "${VSCODE_PREFS_DIR}/settings.json"
+    ln -svfh "$HOME/.config/VSCode.json" "${VSCODE_PREFS_DIR}/settings.json"
 fi
 
 # Symlink Dropbox folders into ~/Documents
-if [ -d $HOME/Dropbox ]; then
-    ln -svfh $HOME/Dropbox/Career/Amazon $HOME/Documents/
-    ln -svfh $HOME/Dropbox/Career/Netflix $HOME/Documents/
-    ln -svfh $HOME/Dropbox/Career $HOME/Documents/
-    ln -svfh $HOME/Dropbox/Money $HOME/Documents/
+if [ -d "$HOME/Dropbox" ]; then
+    ln -svfh "$HOME/Dropbox/Career/Amazon" "$HOME/Documents/"
+    ln -svfh "$HOME/Dropbox/Career/Netflix" "$HOME/Documents/"
+    ln -svfh "$HOME/Dropbox/Career" "$HOME/Documents/"
+    ln -svfh "$HOME/Dropbox/Money" "$HOME/Documents/"
 fi
 
 # Copy Obsidian files into ~/Dropbox
-if [ -d $HOME/Dropbox ]; then
-    mkdir -p $HOME/Dropbox/Obsidian/Templates
-    rm -f $HOME/Dropbox/Obsidian/Templates/Daily\ Template.md
-    cp $HOME/.obsidian/Daily\ Template.md $HOME/Dropbox/Obsidian/Templates/
+if [ -d "$HOME/Dropbox" ]; then
+    mkdir -p "$HOME/Dropbox/Obsidian/Templates"
+    rm -f "$HOME/Dropbox/Obsidian/Templates/Daily Template.md"
+    cp "$HOME/.obsidian/Daily Template.md" "$HOME/Dropbox/Obsidian/Templates/"
 fi
 
 # Symlink .env files into their projects
-if [ -d $HOME/Documents/Programs/EndTimes ]; then
-    rm -f $HOME/Documents/Programs/EndTimes/.dev.vars
-    ln -svfh $HOME/.config/envrc/endtimes $HOME/Documents/Programs/EndTimes/.dev.vars
+if [ -d "$HOME/Documents/Programs/EndTimes" ]; then
+    rm -f "$HOME/Documents/Programs/EndTimes/.dev.vars"
+    ln -svfh "$HOME/.config/envrc/endtimes" "$HOME/Documents/Programs/EndTimes/.dev.vars"
 fi
 
-if [ -d $HOME/Documents/Programs/JakeSky-rs ]; then
-    rm -f $HOME/Documents/Programs/JakeSky-rs/.envrc
-    ln -svfh $HOME/.config/envrc/jakesky $HOME/Documents/Programs/JakeSky-rs/.envrc
+if [ -d "$HOME/Documents/Programs/JakeSky-rs" ]; then
+    rm -f "$HOME/Documents/Programs/JakeSky-rs/.envrc"
+    ln -svfh "$HOME/.config/envrc/jakesky" "$HOME/Documents/Programs/JakeSky-rs/.envrc"
 fi
 
-if [ -d $HOME/Documents/Programs/LottoCheck ]; then
-    rm -f $HOME/Documents/Programs/LottoCheck/.dev.vars
-    ln -svfh $HOME/.config/envrc/lottocheck $HOME/Documents/Programs/LottoCheck/.dev.vars
+if [ -d "$HOME/Documents/Programs/LottoCheck" ]; then
+    rm -f "$HOME/Documents/Programs/LottoCheck/.dev.vars"
+    ln -svfh "$HOME/.config/envrc/lottocheck" "$HOME/Documents/Programs/LottoCheck/.dev.vars"
 fi
 
-if [ -d $HOME/Documents/Programs/mbtalerts ]; then
-    rm -f $HOME/Documents/Programs/mbtalerts/.envrc
-    ln -svfh $HOME/.config/envrc/mbtalerts $HOME/Documents/Programs/mbtalerts/.envrc
+if [ -d "$HOME/Documents/Programs/mbtalerts" ]; then
+    rm -f "$HOME/Documents/Programs/mbtalerts/.envrc"
+    ln -svfh "$HOME/.config/envrc/mbtalerts" "$HOME/Documents/Programs/mbtalerts/.envrc"
 fi
 
-if [ -d $HOME/Documents/Programs/Seen ]; then
-    rm -f $HOME/Documents/Programs/Seen/.env
-    ln -svfh $HOME/.config/envrc/seen $HOME/Documents/Programs/Seen/.env
+if [ -d "$HOME/Documents/Programs/Seen" ]; then
+    rm -f "$HOME/Documents/Programs/Seen/.env"
+    ln -svfh "$HOME/.config/envrc/seen" "$HOME/Documents/Programs/Seen/.env"
 fi
 # End .env files
 
 # Symlink oh-my-zsh theme
 THEME_DIR="$HOME/.oh-my-zsh/custom/themes"
 if [ -d "${THEME_DIR}" ]; then
-    ln -svfh $HOME/.config/gallifrey-custom.zsh-theme "${THEME_DIR}"/
+    ln -svfh "$HOME/.config/gallifrey-custom.zsh-theme" "${THEME_DIR}/"
 fi
 {{- end }}
 
 {{- if eq .chezmoi.hostname "Synology" }}
-ln -svf /var/packages/Git/target/bin/git $HOME/.bin/git
+ln -svf /var/packages/Git/target/bin/git "$HOME/.bin/git"
 {{- end }}

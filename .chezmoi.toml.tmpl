@@ -1,6 +1,6 @@
 {{- $email := promptStringOnce . "email" "Email address" -}}
 
-{{/* AWS config is only rendered on macOS, so only prompt there */}}
+{{/* AWS config values are only used on macOS, so only prompt there */}}
 {{- $aws_region := "" -}}
 {{- $aws_sso_url := "" -}}
 {{- $aws_sso_account_id := "" -}}
