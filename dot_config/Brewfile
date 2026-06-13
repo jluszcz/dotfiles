@@ -1,49 +1,94 @@
-tap "1password/tap"
-tap "hashicorp/tap"
+tap "1password/tap", trusted: true
+tap "hashicorp/tap", trusted: true
+# Automatically exclude development dependencies from Time Machine backups
 brew "asimov"
+# Zstandard is a real-time compression algorithm
 brew "zstd"
+# Official Amazon AWS command-line interface
 brew "awscli"
+# Python code formatter
 brew "black"
+# Manage your dotfiles across multiple diverse machines, securely
 brew "chezmoi"
+# GNU File, Shell, and Text utilities
 brew "coreutils"
+# Suite of command-line tools for converting to and working with CSV
 brew "csvkit"
+# Diff that understands syntax
 brew "difftastic"
+# Load/unload environment variables based on $PWD
 brew "direnv"
+# Functional metaprogramming aware language built on Erlang VM
 brew "elixir"
+# Play, record, convert, and stream select audio and video codecs
 brew "ffmpeg"
+# GitHub command-line tool
 brew "gh"
+# Distributed revision control system
 brew "git"
+# Prevents you from committing sensitive information to a git repo
 brew "git-secrets"
+# GNU implementation of the famous stream editor
 brew "gnu-sed"
+# OpenType text shaping engine
 brew "harfbuzz"
+# Open-source build automation tool based on the Groovy and Kotlin DSL
 brew "gradle"
+# GNU grep, egrep and fgrep
 brew "grep"
+# User-friendly cURL replacement (command-line HTTP client)
 brew "httpie"
+# Image format providing lossless and lossy compression for web images
 brew "webp"
+# Tools and libraries to manipulate images in select formats
 brew "imagemagick"
+# Lightweight and flexible command-line JSON processor
 brew "jq"
+# Subtitle renderer for the ASS/SSA subtitle format
 brew "libass"
+# NCurses Disk Usage
 brew "ncdu"
+# Open-source, cross-platform JavaScript runtime environment
 brew "node"
+# Generate clients, server & docs from an OpenAPI spec (v2, v3)
 brew "openapi-generator"
+# Framework for layout and rendering of i18n text
 brew "pango"
+# Framework for managing multi-language pre-commit hooks
 brew "pre-commit"
+# Interpreted, interactive, object-oriented programming language
 brew "python@3.10"
+# QR Code generation
 brew "qrencode"
+# Perl-powered file rename script with many helpful built-ins
 brew "rename"
+# Utility that provides fast incremental file transfer
 brew "rsync"
+# Used as a compiler wrapper and avoids compilation when possible
 brew "sccache"
+# Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
+# SMART hard drive monitoring
 brew "smartmontools"
+# OCR (Optical Character Recognition) engine
 brew "tesseract"
+# Terminal multiplexer
 brew "tmux"
+# Display directories as trees (with optional color/HTML output)
 brew "tree"
+# Extremely fast Python package installer and resolver, written in Rust
 brew "uv"
+# Executes a program periodically, showing output fullscreen
 brew "watch"
+# Internet file retriever
 brew "wget"
+# Feature-rich command-line audio/video downloader
 brew "yt-dlp"
+# Terraform
 brew "hashicorp/tap/terraform"
+# Command-line interface for 1Password
 cask "1password-cli"
+# Status bar application to enable/disable Yubikey Nano
 cask "pallotron-yubiswitch"
 cargo "cargo-llvm-cov"
 cargo "cargo-outdated"
