@@ -189,4 +189,9 @@ for f in "${mkv_files[@]}"; do
   rm "$f"
 done
 
+# Remove a stray .DS_Store so an otherwise-empty directory can be cleaned up
+if [[ -z "$(find "$DIR" -mindepth 1 ! -name .DS_Store -print -quit)" ]]; then
+  rm -f "$DIR/.DS_Store"
+fi
+
 rmdir "$DIR" || echo "Warning: Directory not empty, skipping removal."
