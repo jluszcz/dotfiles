@@ -1,199 +1,206 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
 
-SYNOLOGY="jluszcz@synology.local"
-PLEX_BASE="/volume1/Plex/Library"
+import argparse
+import re
+import shlex
+import subprocess
+import sys
+from pathlib import Path
 
-usage() {
-  echo "Usage: $(basename "$0") [-c config_file] [-m|-t] [-n show_name] [-s season] [-d] [-o] <directory>" >&2
-  echo "" >&2
-  echo "Options:" >&2
-  echo "  -m                    Movies" >&2
-  echo "  -t                    TV Shows" >&2
-  echo "  -n <name>             Show name (TV only)" >&2
-  echo "  -s <number>           Season number (TV only)" >&2
-  echo "  -c <config_file>      Config file (key=value format)" >&2
-  echo "  -d                    Dry run: print what would be done without transferring" >&2
-  echo "  -o                    Overwrite: delete existing remote file before syncing" >&2
-  echo "" >&2
-  echo "A .plex-sync file in <directory> is used automatically if present." >&2
-  echo "Command-line options take precedence over the config file." >&2
-  exit 1
-}
+SYNOLOGY = "jluszcz@synology.local"
+PLEX_BASE = "/volume1/Plex/Library"
 
-CONFIG_FILE=""
-OPT_MEDIA_TYPE=""
-OPT_SHOW_NAME=""
-OPT_SEASON=""
-OPT_DRY_RUN=""
-OPT_OVERWRITE=""
-while getopts ":c:mtn:s:do" opt; do
-  case "$opt" in
-    c) CONFIG_FILE="$OPTARG" ;;
-    m) OPT_MEDIA_TYPE="movies" ;;
-    t) OPT_MEDIA_TYPE="tv" ;;
-    n) OPT_SHOW_NAME="$OPTARG" ;;
-    s) OPT_SEASON="$OPTARG" ;;
-    d) OPT_DRY_RUN=1 ;;
-    o) OPT_OVERWRITE=1 ;;
-    *) usage ;;
-  esac
-done
-shift $((OPTIND - 1))
 
-if [[ $# -ne 1 ]]; then
-  usage
-fi
+def load_config(path):
+    config = {}
+    with open(path) as f:
+        for line in f:
+            line = line.split('#')[0].strip()
+            if '=' not in line:
+                continue
+            key, _, value = line.partition('=')
+            config[key.strip()] = value.strip()
+    return config
 
-DIR="${1%/}"
 
-if [[ ! -d "$DIR" ]]; then
-  echo "Error: '$DIR' is not a directory." >&2
-  exit 1
-fi
+def file_display(names):
+    if len(names) == 1:
+        return names[0]
 
-# Auto-discover config file in the directory if not explicitly provided
-if [[ -z "$CONFIG_FILE" && -f "$DIR/.plex-sync" ]]; then
-  CONFIG_FILE="$DIR/.plex-sync"
-fi
+    prefix = names[0]
+    for name in names[1:]:
+        while prefix and not name.startswith(prefix):
+            prefix = prefix[:-1]
 
-# Load config file values if present
-MEDIA_TYPE=""
-SHOW_NAME=""
-SEASON=""
-if [[ -n "$CONFIG_FILE" ]]; then
-  if [[ ! -f "$CONFIG_FILE" ]]; then
-    echo "Error: Config file '$CONFIG_FILE' not found." >&2
-    exit 1
-  fi
-  while IFS='=' read -r key value || [[ -n "$key" ]]; do
-    # Strip comments and whitespace
-    key="${key%%#*}"
-    key="${key// /}"
-    value="${value%%#*}"
-    value="${value# }"
-    value="${value% }"
-    [[ -z "$key" ]] && continue
-    case "$key" in
-      MEDIA_TYPE) MEDIA_TYPE="$value" ;;
-      SHOW_NAME)  SHOW_NAME="$value" ;;
-      SEASON)     SEASON="$value" ;;
-    esac
-  done < "$CONFIG_FILE"
-  echo "Loaded config: $CONFIG_FILE"
-fi
+    suffix = names[0]
+    for name in names[1:]:
+        while suffix and not name.endswith(suffix):
+            suffix = suffix[1:]
 
-# Command-line options take precedence over config file
-[[ -n "$OPT_MEDIA_TYPE" ]] && MEDIA_TYPE="$OPT_MEDIA_TYPE"
-[[ -n "$OPT_SHOW_NAME" ]]  && SHOW_NAME="$OPT_SHOW_NAME"
-[[ -n "$OPT_SEASON" ]]     && SEASON="$OPT_SEASON"
+    if len(prefix) + len(suffix) >= min(len(n) for n in names):
+        return ', '.join(names)
 
-if [[ -z "$MEDIA_TYPE" ]]; then
-  echo "Media type:"
-  echo "  1) Movies"
-  echo "  2) TV Shows"
-  read -rp "Choice [1/2]: " media_choice
-else
-  media_choice="$MEDIA_TYPE"
-fi
+    middles = []
+    for name in names:
+        mid = name[len(prefix):]
+        if suffix:
+            mid = mid[:-len(suffix)]
+        middles.append(mid)
 
-shopt -s nullglob
-mkv_files=("$DIR"/*.mkv)
+    return f"{prefix}[{', '.join(middles)}]{suffix}"
 
-case "$media_choice" in
-  1|[Mm]*)
-    TARGET="$PLEX_BASE/Movies"
-    ;;
-  2|[Tt]*)
-    if [[ -z "$SHOW_NAME" || -z "$SEASON" ]]; then
-      detected_show=""
-      detected_season=""
-      all_match=1
-      for f in "${mkv_files[@]}"; do
-        fname="$(basename "$f" .mkv)"
-        if [[ "$fname" =~ ^(.+)\ -\ s([0-9]+)e[0-9]+ ]]; then
-          file_show="${BASH_REMATCH[1]}"
-          file_season=$((10#${BASH_REMATCH[2]}))
-          if [[ -z "$detected_show" ]]; then
-            detected_show="$file_show"
-            detected_season="$file_season"
-          elif [[ "$file_show" != "$detected_show" ]] || (( file_season != detected_season )); then
-            all_match=0
-            break
-          fi
-        else
-          all_match=0
-          break
-        fi
-      done
-      if [[ $all_match -eq 1 && -n "$detected_show" ]]; then
-        [[ -z "$SHOW_NAME" ]] && SHOW_NAME="$detected_show"
-        [[ -z "$SEASON" ]] && SEASON="$detected_season"
-        echo "Detected: $SHOW_NAME, Season $SEASON"
-      fi
-    fi
-    if [[ -z "$SHOW_NAME" ]]; then
-      read -rp "Show name: " show_name
-    else
-      show_name="$SHOW_NAME"
-    fi
-    if [[ -z "$SEASON" ]]; then
-      read -rp "Season number: " season_num
-    else
-      season_num="$SEASON"
-    fi
-    season_padded=$(printf "%02d" "$season_num")
-    TARGET="$PLEX_BASE/TV Shows/$show_name/Season $season_padded"
-    ;;
-  *)
-    echo "Error: Invalid choice." >&2
-    exit 1
-    ;;
-esac
 
-if [[ ${#mkv_files[@]} -eq 0 ]]; then
-  echo "No .mkv files found in '$DIR'." >&2
-  exit 1
-fi
+def detect_show_season(files):
+    pattern = re.compile(r'^(.+) - s(\d+)e\d+')
+    show = season = None
+    for f in files:
+        m = pattern.match(f.stem)
+        if not m:
+            return None, None
+        s, n = m.group(1), int(m.group(2))
+        if show is None:
+            show, season = s, n
+        elif s != show or n != season:
+            return None, None
+    return show, season
 
-echo ""
-echo "Target: $SYNOLOGY:$TARGET/"
-echo ""
 
-if [[ -n "$OPT_DRY_RUN" ]]; then
-  echo "[dry run] Would create remote directory: $SYNOLOGY:$TARGET/"
-  for f in "${mkv_files[@]}"; do
-    if [[ -n "$OPT_OVERWRITE" ]]; then
-      echo "[dry run] Would delete: $SYNOLOGY:$TARGET/$(basename "$f")"
-    fi
-    echo "[dry run] Would rsync: $f -> $SYNOLOGY:$TARGET/"
-    echo "[dry run] Would delete local: $f"
-  done
-  echo "[dry run] Would remove directory: $DIR"
-  echo "Done (dry run)."
-  exit 0
-fi
+def main():
+    parser = argparse.ArgumentParser(prog='plex-sync', description='Sync media to Plex on Synology')
+    parser.add_argument('-c', dest='config_file', metavar='config_file')
+    media = parser.add_mutually_exclusive_group()
+    media.add_argument('-m', dest='media_type', action='store_const', const='movies')
+    media.add_argument('-t', dest='media_type', action='store_const', const='tv')
+    parser.add_argument('-n', dest='show_name', metavar='name')
+    parser.add_argument('-s', dest='season', metavar='number', type=int)
+    parser.add_argument('-d', dest='dry_run', action='store_true')
+    parser.add_argument('-o', dest='overwrite', action='store_true')
+    parser.add_argument('directory')
+    args = parser.parse_args()
 
-read -rp "Proceed? [y/N]: " confirm
-[[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 0; }
+    directory = Path(args.directory.rstrip('/'))
+    if not directory.is_dir():
+        print(f"Error: '{directory}' is not a directory.", file=sys.stderr)
+        sys.exit(1)
 
-# shellcheck disable=SC2029  # local expansion of TARGET is intentional
-ssh "$SYNOLOGY" "mkdir -p '$TARGET'"
+    config_path = Path(args.config_file) if args.config_file else directory / '.plex-sync'
+    if args.config_file and not config_path.is_file():
+        print(f"Error: Config file '{config_path}' not found.", file=sys.stderr)
+        sys.exit(1)
 
-for f in "${mkv_files[@]}"; do
-  if [[ -n "$OPT_OVERWRITE" ]]; then
-    # shellcheck disable=SC2029  # local expansion of basename is intentional
-    ssh "$SYNOLOGY" "rm -f '$TARGET/$(basename "$f")'"
-  fi
-  rsync -avz --progress --protect-args "$f" "$SYNOLOGY:$TARGET/"
-  rm "$f"
-done
+    media_type = show_name = None
+    season = None
 
-# Remove a stray .DS_Store so an otherwise-empty directory can be cleaned up
-if [[ -z "$(find "$DIR" -mindepth 1 ! -name .DS_Store -print -quit)" ]]; then
-  rm -f "$DIR/.DS_Store"
-fi
+    if config_path.is_file():
+        cfg = load_config(config_path)
+        media_type = cfg.get('MEDIA_TYPE')
+        show_name = cfg.get('SHOW_NAME')
+        if s := cfg.get('SEASON'):
+            try:
+                season = int(s)
+            except ValueError:
+                print(f"Error: Invalid SEASON value '{s}' in config.", file=sys.stderr)
+                sys.exit(1)
+        print(f"Loaded config: {config_path}")
 
-rmdir "$DIR" || echo "Warning: Directory not empty, skipping removal."
+    if args.media_type:
+        media_type = args.media_type
+    if args.show_name:
+        show_name = args.show_name
+    if args.season is not None:
+        season = args.season
 
-echo "Done - Consider running 'tmclean' to reclaim space"
+    mkv_files = sorted(directory.glob('*.mkv'))
+    if not mkv_files:
+        print(f"No .mkv files found in '{directory}'.", file=sys.stderr)
+        sys.exit(1)
+
+    if not media_type:
+        print("Media type:\n  1) Movies\n  2) TV Shows")
+        choice = input("Choice [1/2]: ").strip()
+        if choice in ('1',) or choice.lower().startswith('m'):
+            media_type = 'movies'
+        elif choice in ('2',) or choice.lower().startswith('t'):
+            media_type = 'tv'
+        else:
+            print("Error: Invalid choice.", file=sys.stderr)
+            sys.exit(1)
+
+    names = [f.name for f in mkv_files]
+
+    if media_type.lower().startswith('m'):
+        target = f"{PLEX_BASE}/Movies"
+        display = f"…/Movies/{file_display(names)}"
+    elif media_type.lower().startswith('t'):
+        if not show_name or season is None:
+            detected_show, detected_season = detect_show_season(mkv_files)
+            if detected_show:
+                if not show_name:
+                    show_name = detected_show
+                if season is None:
+                    season = detected_season
+                print(f"Detected: {show_name}, Season {season}")
+        if not show_name:
+            show_name = input("Show name: ").strip()
+        if season is None:
+            try:
+                season = int(input("Season number: ").strip())
+            except ValueError:
+                print("Error: Season number must be an integer.", file=sys.stderr)
+                sys.exit(1)
+        season_padded = f"{season:02d}"
+        target = f"{PLEX_BASE}/TV Shows/{show_name}/Season {season_padded}"
+        display = f"…/TV Shows/{show_name}/Season {season_padded}/{file_display(names)}"
+    else:
+        print("Error: Invalid media type.", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"\nTarget: {SYNOLOGY}:{display}\n")
+
+    if args.dry_run:
+        print(f"[dry run] Would create remote directory: {SYNOLOGY}:{target}/")
+        for f in mkv_files:
+            if args.overwrite:
+                print(f"[dry run] Would delete: {SYNOLOGY}:{target}/{f.name}")
+            print(f"[dry run] Would rsync: {f} -> {SYNOLOGY}:{target}/")
+            print(f"[dry run] Would delete local: {f}")
+        print(f"[dry run] Would remove directory: {directory}")
+        print("Done (dry run).")
+        return
+
+    if input("Proceed? [y/N]: ").strip().lower() != 'y':
+        print("Aborted.")
+        return
+
+    try:
+        subprocess.run(['ssh', SYNOLOGY, f"mkdir -p {shlex.quote(target)}"], check=True)
+
+        for f in mkv_files:
+            if args.overwrite:
+                subprocess.run(['ssh', SYNOLOGY, f"rm -f {shlex.quote(f'{target}/{f.name}')}"], check=True)
+            subprocess.run(
+                ['rsync', '-avz', '--progress', '--protect-args', str(f), f"{SYNOLOGY}:{target}/"],
+                check=True,
+            )
+            f.unlink()
+    except subprocess.CalledProcessError as e:
+        print(f"Error: Command failed: {' '.join(str(x) for x in e.cmd)}", file=sys.stderr)
+        sys.exit(1)
+
+    if not any(p for p in directory.iterdir() if p.name != '.DS_Store'):
+        (directory / '.DS_Store').unlink(missing_ok=True)
+
+    try:
+        directory.rmdir()
+    except OSError:
+        print("Warning: Directory not empty, skipping removal.")
+
+    print("Done - Consider running 'tmclean' to reclaim space")
+
+
+if __name__ == '__main__':
+    main()

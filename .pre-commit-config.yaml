@@ -17,5 +17,5 @@ repos:
     -   id: shellcheck
         types: [file]
         files: 'dot_bin/executable_|dot_config/rustbin|run_onchange.*\.sh'
-        exclude: '\.tmpl$'
+        exclude: '(\.tmpl$|executable_plex-sync)'
         args: [-x]
