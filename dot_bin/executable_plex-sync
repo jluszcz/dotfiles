@@ -195,3 +195,5 @@ if [[ -z "$(find "$DIR" -mindepth 1 ! -name .DS_Store -print -quit)" ]]; then
 fi
 
 rmdir "$DIR" || echo "Warning: Directory not empty, skipping removal."
+
+echo "Done - Consider running 'tmclean' to reclaim space"
