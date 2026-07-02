@@ -56,8 +56,6 @@ brew "openapi-generator"
 brew "pango"
 # Framework for managing multi-language pre-commit hooks
 brew "pre-commit"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.10"
 # QR Code generation
 brew "qrencode"
 # Perl-powered file rename script with many helpful built-ins
