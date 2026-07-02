@@ -6,8 +6,10 @@
 	pager = less -FMRiX
 	excludesfile = {{ .chezmoi.homeDir }}/.gitignore
 
+{{- if eq .chezmoi.os "darwin" }}
 [diff]
     external = difft
+{{- end }}
 
 [color]
 	ui = true
