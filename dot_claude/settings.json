@@ -39,5 +39,6 @@
       ]
     }
   },
-  "theme": "light"
+  "theme": "light",
+  "model": "opus"
 }
