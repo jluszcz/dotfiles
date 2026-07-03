@@ -10,7 +10,7 @@ short_pwd() {
 
 PS1='\[\033[1m\][Synology]\[\033[0m\] $(short_pwd) » '
 
-eval $(dircolors $HOME/.dircolors)
+[ -f "$HOME/.dircolors" ] && eval "$(dircolors "$HOME/.dircolors")"
 
 alias l=ls
 alias ll='ls -lh'

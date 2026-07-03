@@ -11,11 +11,17 @@ repos:
             - --allow-missing-credentials
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.20
+    hooks:
+    -   id: ruff-check
+        types_or: [file]
+        files: 'dot_bin/executable_plex-sync'
 -   repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.10.0.1
     hooks:
     -   id: shellcheck
         types: [file]
-        files: 'dot_bin/executable_|dot_config/rustbin|run_onchange.*\.sh'
+        files: 'dot_bin/executable_|dot_config/rustbin|run_.*\.sh'
         exclude: '(\.tmpl$|executable_plex-sync)'
         args: [-x]

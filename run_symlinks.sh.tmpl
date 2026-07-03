@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+set -eu
+
 {{- if eq .chezmoi.os "darwin" }}
 # Symlink preferences into the right places
 SUBLIME_PREFS_DIR="$HOME/Library/Application Support/Sublime Text/Packages/User"
@@ -23,7 +25,7 @@ if [ -d "$HOME/Dropbox" ]; then
 fi
 
 # Copy Obsidian files into ~/Dropbox
-if [ -d "$HOME/Dropbox" ]; then
+if [ -d "$HOME/Dropbox" ] && [ -f "$HOME/.obsidian/Daily Template.md" ]; then
     mkdir -p "$HOME/Dropbox/Obsidian/Templates"
     rm -f "$HOME/Dropbox/Obsidian/Templates/Daily Template.md"
     cp "$HOME/.obsidian/Daily Template.md" "$HOME/Dropbox/Obsidian/Templates/"

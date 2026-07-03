@@ -34,7 +34,7 @@ Guard OS-specific blocks with `{{- if eq .chezmoi.os "darwin" }}...{{- end }}`.
 - `dot_claude/` → `~/.claude/` — Claude Code settings
 - `private_dot_ssh/` → `~/.ssh/` — SSH config (private)
 - `run_onchange_brew.sh.tmpl` — runs `brew bundle` when the Brewfile changes
-- `run_onchange_symlinks.sh.tmpl` — creates symlinks for app prefs (macOS only)
+- `run_symlinks.sh.tmpl` — creates symlinks for app prefs on every apply (macOS only)
 
 ## Rules of Thumb
 

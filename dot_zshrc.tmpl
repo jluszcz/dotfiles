@@ -91,9 +91,10 @@ if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     }
 
     rup() {
-        git switch main && git pull && git switch -c Deps -t origin/main && cargo update && cargo outdated --root-deps-only || return 1
+        git switch main && git pull && git switch -C Deps -t origin/main && cargo update && cargo outdated --root-deps-only || return 1
         if git diff --quiet; then
-            return 0
+            git switch main && git branch -D Deps
+            return $?
         fi
 
         cball && g commit -a -m "Update dependencies" && git push origin HEAD && gh pr create --title "Update dependencies" --body "" --base main --head Deps
