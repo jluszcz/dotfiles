@@ -15,7 +15,6 @@ repos:
     rev: v0.15.20
     hooks:
     -   id: ruff-check
-        types: [file]
         types_or: [file]
         files: 'dot_bin/executable_plex-sync'
 -   repo: https://github.com/shellcheck-py/shellcheck-py
