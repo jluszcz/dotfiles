@@ -25,11 +25,13 @@
       "Bash(git push:*)"
     ]
   },
+  "model": "opus",
   "enabledPlugins": {
     "rust-analyzer-lsp@claude-plugins-official": true,
     "jluszcz@jluszcz": true,
     "skill-creator@claude-plugins-official": true
   },
+  "theme": "light",
   "mcpServers": {
     "context7": {
       "command": "npx",
@@ -38,7 +40,5 @@
         "@upstash/context7-mcp"
       ]
     }
-  },
-  "theme": "light",
-  "model": "opus"
+  }
 }
