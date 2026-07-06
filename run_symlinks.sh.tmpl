@@ -52,6 +52,11 @@ if [ -d "$HOME/Documents/Programs/mbtalerts" ]; then
     ln -svfh "$HOME/.config/envrc/mbtalerts" "$HOME/Documents/Programs/mbtalerts/.envrc"
 fi
 
+if [ -d "$HOME/Documents/Programs/plexport" ]; then
+    rm -f "$HOME/Documents/Programs/plexport/.envrc"
+    ln -svfh "$HOME/.config/envrc/plexport" "$HOME/Documents/Programs/plexport/.envrc"
+fi
+
 if [ -d "$HOME/Documents/Programs/Seen" ]; then
     rm -f "$HOME/Documents/Programs/Seen/.env"
     ln -svfh "$HOME/.config/envrc/seen" "$HOME/Documents/Programs/Seen/.env"
