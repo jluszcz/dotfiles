@@ -16,12 +16,12 @@ repos:
     hooks:
     -   id: ruff-check
         types_or: [file]
-        files: 'dot_bin/executable_plex-sync'
+        files: 'dot_bin/executable_(plex-sync|rust-reminder)'
 -   repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.10.0.1
     hooks:
     -   id: shellcheck
         types: [file]
         files: 'dot_bin/executable_|dot_config/rustbin|run_.*\.sh'
-        exclude: '(\.tmpl$|executable_plex-sync)'
+        exclude: '(\.tmpl$|executable_(plex-sync|rust-reminder))'
         args: [-x]

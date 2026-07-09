@@ -38,14 +38,6 @@ plugins=(git direnv)
 
 source $ZSH/oh-my-zsh.sh
 
-# User configuration
-
-# Navigation
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias .....="cd ../../../.."
-
 # Git Aliases
 alias g='git'
 alias gb='git branch'
@@ -103,6 +95,26 @@ if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     }
 
     alias drup='git switch main; git pull; git branch -D Deps'
+
+    {{- if eq .chezmoi.os "darwin" }}
+    # Wrap rustup so a successful `rustup update` that actually installs a new
+    # toolchain offers to schedule an "Update Rust" reminder for the next release
+    # (see ~/.bin/rust-reminder). Nothing happens when the toolchain is unchanged.
+    rustup() {
+        if [ "${1:-}" = "update" ]; then
+            local tmp rc
+            tmp=$(mktemp)
+            command rustup "$@" 2>&1 | tee "$tmp"
+            rc=${pipestatus[1]}
+            if [ "$rc" -eq 0 ] && grep -q 'updated -' "$tmp"; then
+                rust-reminder
+            fi
+            rm -f "$tmp"
+            return "$rc"
+        fi
+        command rustup "$@"
+    }
+    {{- end }}
 fi
 
 {{- if eq .chezmoi.os "darwin" }}
