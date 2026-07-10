@@ -83,18 +83,17 @@ if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     }
 
     rup() {
-        git switch main && git pull && git switch -C Deps -t origin/main && cargo update && cargo outdated --root-deps-only || return 1
+        local branch="Deps-$RANDOM"
+        git switch main && git pull && git switch -C "$branch" -t origin/main && cargo update && cargo outdated --root-deps-only || return 1
         if git diff --quiet; then
-            git switch main && git branch -D Deps
+            git switch main && git branch -D "$branch"
             return $?
         fi
 
-        cball && g commit -a -m "Update dependencies" && git push origin HEAD && gh pr create --title "Update dependencies" --body "" --base main --head Deps || return 1
+        cball && g commit -a -m "Update dependencies" && git push origin HEAD && gh pr create --title "Update dependencies" --body "" --base main --head "$branch" || return 1
 
-        echo -e "\nRun 'drup' to delete the Deps branch once merged\n"
+        echo -e "\nRun 'gmerge' to switch back to main and delete the branch once merged\n"
     }
-
-    alias drup='git switch main; git pull; git branch -D Deps'
 
     {{- if eq .chezmoi.os "darwin" }}
     # Wrap rustup so a successful `rustup update` that actually installs a new
