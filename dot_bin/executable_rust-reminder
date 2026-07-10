@@ -6,36 +6,25 @@
 
 """Create an Apple Reminder to update Rust for the next release.
 
-Prompts for the next release version and date (look them up at
-https://releases.rs), then schedules a "Update Rust" reminder for 10am on the
-Saturday following that release date, with the release notes URL in the body.
+Prompts for the next release date (look it up at https://releases.rs), then
+schedules a "Update Rust" reminder for 10am on the Saturday following that date,
+with the releases URL in the body.
 
 macOS only (uses the Reminders app via AppleScript).
 """
 
 import datetime
-import re
 import subprocess
 import sys
 
 RELEASES_URL = "https://releases.rs"
-VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
-
-
-def prompt_version():
-    print(f"Look up the next Rust release at {RELEASES_URL}")
-    raw = input("Next release version (e.g. 1.97.0, blank to skip): ").strip()
-    if not raw:
-        return None
-    version = raw.lstrip("vV")
-    if not VERSION_RE.match(version):
-        print(f"Error: '{raw}' is not a valid version (expected N.N.N).", file=sys.stderr)
-        sys.exit(1)
-    return version
 
 
 def prompt_date():
-    raw = input("Release date (YYYY-MM-DD): ").strip()
+    print(f"Look up the next Rust release at {RELEASES_URL}")
+    raw = input("Release date (YYYY-MM-DD, blank to skip): ").strip()
+    if not raw:
+        return None
     try:
         return datetime.date.fromisoformat(raw)
     except ValueError:
@@ -72,19 +61,17 @@ end tell
 
 
 def main():
-    version = prompt_version()
-    if not version:
+    release_date = prompt_date()
+    if not release_date:
         print("Skipped - no reminder created.")
         return
 
-    release_date = prompt_date()
     reminder_date = following_saturday(release_date)
-    url = f"{RELEASES_URL}/docs/{version}/"
 
-    create_reminder("Update Rust", url, reminder_date)
+    create_reminder("Update Rust", RELEASES_URL, reminder_date)
 
     print(f"\nReminder set: 'Update Rust' on {reminder_date:%A, %Y-%m-%d} at 10:00am")
-    print(f"  {url}")
+    print(f"  {RELEASES_URL}")
 
 
 if __name__ == "__main__":
