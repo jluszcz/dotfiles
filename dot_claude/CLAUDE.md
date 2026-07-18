@@ -38,7 +38,7 @@ Break complex work into 3-5 stages. Document in `IMPLEMENTATION_PLAN.md`:
 2. **Test** - Write failing tests to validate functionality first
 3. **Implement** - Write code to implement the feature and get tests to pass
 4. **Refactor** - Clean up the code, maintain tests passing
-5. **Commit** - With clear message linking to plan
+5. **Commit** - Using the "jluszcz:commit" skill
 
 ### 3. When Stuck (After 3 Attempts)
 
@@ -127,7 +127,6 @@ When multiple valid approaches exist, choose based on:
 - [ ] No linter/formatter warnings
 - [ ] Commit messages are clear
 - [ ] Implementation matches plan
-- [ ] No TODOs without issue numbers
 
 ### Test Guidelines
 
@@ -142,11 +141,13 @@ When multiple valid approaches exist, choose based on:
 ## Important Reminders
 
 **ALWAYS**:
-- Commit working code incrementally
-- Update plan documentation as you go
-- Learn from existing implementations
+- Commit working code incrementally using the "jluszcz:commit" skill
+- Create branches and pull requests for changes
+  - Branches should have an upstream branch
+  - Always commit to feature branches
 - Fix tests instead of disabling them
-- Commit compiling code that passes build-time checks
+- Update plan documentation, README.md, and CLAUDE.md as you go
+- Learn from existing implementations
 - Stop after 3 failed attempts and reassess
 
 **NEVER**:
