@@ -11,7 +11,7 @@ chezmoi encodes metadata in filenames. Key conventions used in this repo:
 |---|---|---|
 | `dot_` | Maps to a dotfile (`.`) in `$HOME` | `dot_zshrc` → `~/.zshrc` |
 | `executable_` | Target file should be `chmod +x` | `executable_tardir` → `~/.bin/tardir` |
-| `private_` | Target file should be `chmod 600` | `private_dot_ssh/` → `~/.ssh/` |
+| `private_` | Strip group/world permissions on the target (`0600` files, `0700` dirs) | `private_dot_ssh/` → `~/.ssh/` |
 | `.tmpl` suffix | File is a Go template rendered at apply time | `dot_zshrc.tmpl` → `~/.zshrc` |
 | `run_onchange_` | Script run only when its contents change | `run_onchange_brew.sh.tmpl` |
 
@@ -40,6 +40,16 @@ Guard OS-specific blocks with `{{- if eq .chezmoi.os "darwin" }}...{{- end }}`.
 
 - **New dotfile**: prefix with `dot_`, add `.tmpl` suffix only if it needs per-machine values.
 - **New personal script**: add to `dot_bin/` with `executable_` prefix, no extension.
-- **Sensitive file** (keys, tokens): add `private_` prefix so chezmoi sets restrictive permissions.
+- **Secret value** (keys, tokens, IDs): **never write the value into a file in this repo.** `private_` only
+  changes permissions on the *applied* target — it does nothing to the source file, which is committed to git in
+  plaintext. Instead create a `private_<name>.tmpl` and pull the value from 1Password at apply time:
+
+  ```
+  export JAKESKY_API_KEY="{{ onepasswordRead "op://Personal/Open Weather/api key" }}"
+  ```
+
+  Only the `op://` reference is committed; the secret itself never enters the repo. See
+  `dot_config/envrc/private_executable_jakesky.tmpl` and its siblings for the pattern. The `.tmpl` suffix is
+  what makes this work — a `private_` file *without* it is not templated, so the value would be stored literally.
 - **Mac OS-only config**: wrap in `{{- if eq .chezmoi.os "darwin" }}` inside a `.tmpl` file.
 - **Don't edit target files directly** — edit the source files here and run `chezmoi apply`.
