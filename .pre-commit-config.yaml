@@ -21,8 +21,17 @@ repos:
 -   repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.10.0.1
     hooks:
+    # .tmpl files are excluded because shellcheck cannot parse chezmoi's
+    # {{ ... }} syntax; the local hook below renders them first and covers them.
     -   id: shellcheck
         types: [file]
-        files: 'dot_bin/executable_|dot_config/rustbin|run_.*\.sh'
+        files: 'dot_bin/executable_|dot_config/rustbin'
         exclude: '(\.tmpl$|executable_(plex-sync|rust-reminder))'
         args: [-x]
+-   repo: local
+    hooks:
+    -   id: shellcheck-templates
+        name: shellcheck chezmoi shell templates
+        entry: scripts/shellcheck-templates.sh
+        language: script
+        files: '^run_.*\.sh\.tmpl$'
