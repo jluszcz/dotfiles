@@ -53,3 +53,20 @@ Guard OS-specific blocks with `{{- if eq .chezmoi.os "darwin" }}...{{- end }}`.
   what makes this work — a `private_` file *without* it is not templated, so the value would be stored literally.
 - **Mac OS-only config**: wrap in `{{- if eq .chezmoi.os "darwin" }}` inside a `.tmpl` file.
 - **Don't edit target files directly** — edit the source files here and run `chezmoi apply`.
+
+## Checks
+
+`pre-commit run --all-files` is the gate, and CI (`.github/workflows/ci.yml`) runs the same hooks on every push and
+PR — the repo previously had no CI at all, so nothing but local discipline enforced them.
+
+Shell linting takes two hooks, because shellcheck cannot parse chezmoi's `{{ ... }}`:
+
+- `shellcheck` covers the plain scripts under `dot_bin/` and `dot_config/rustbin`, excluding `.tmpl` files.
+- `shellcheck-templates` (`scripts/shellcheck-templates.sh`) renders each `run_*.sh.tmpl` with
+  `chezmoi execute-template` and pipes the result through shellcheck. Its `files` pattern used to be part of the
+  first hook's, where the `.tmpl` exclusion silently cancelled it out — **zero `run_` scripts were linted by
+  anything**, despite the config appearing to cover them.
+
+A rendered template only exercises the branches that this machine's context selects, so an
+`{{ if eq .chezmoi.os "darwin" }}` block is checked when you run the hooks on macOS, and the `linux` side is what CI
+checks. Run the hooks locally before pushing macOS-only changes.
