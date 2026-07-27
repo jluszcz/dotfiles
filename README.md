@@ -3,7 +3,7 @@
 ## Mac OS
 
 - Install [iTerm2](https://iterm2.com)
-- Install [Maestral](https://maestral.app) to `~/Dropbox`
+- Install [Dropbox](https://www.dropbox.com/install)
 
 ```bash
 sudo xcode-select --install
