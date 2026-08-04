@@ -143,7 +143,7 @@ When multiple valid approaches exist, choose based on:
 **ALWAYS**:
 - Commit working code incrementally using the "jluszcz:commit" skill
 - Create branches and pull requests for changes
-  - Branches should have an upstream branch
+  - Branches should have an upstream branch (`origin/main`, or the upstream branch of a stacked PR)
   - Always commit to feature branches
 - Fix tests instead of disabling them
 - Update plan documentation, README.md, and CLAUDE.md as you go
