@@ -141,10 +141,15 @@ When multiple valid approaches exist, choose based on:
 ## Important Reminders
 
 **ALWAYS**:
+- Create branches for changes, do not commit directly to the default branch
+  - Create the branch BEFORE the first commit, with tracking configured:
+    - `git fetch origin`
+    - `git switch -c <branch> --track origin/main` (or `origin/master`)
+    - Stacked PRs: `git switch -c <branch> <parent-branch>` then `git branch --set-upstream-to=<parent-branch>`
+  - Verify tracking before every commit: `git status -sb` must show `## <branch>...<upstream>`.
+    A bare `## <branch>` means no upstream is set — fix it with
+    `git branch --set-upstream-to=origin/main` before committing
 - Commit working code incrementally using the "jluszcz:commit" skill
-- Create branches and pull requests for changes
-  - Branches should have an upstream branch (`origin/main`, or the upstream branch of a stacked PR)
-  - Always commit to feature branches
 - Fix tests instead of disabling them
 - Update plan documentation, README.md, and CLAUDE.md as you go
 - Learn from existing implementations
