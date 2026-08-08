@@ -1,5 +1,9 @@
 tap "1password/tap", trusted: true
 tap "hashicorp/tap", trusted: true
+# Static analysis and lint tool, for (ba)sh scripts
+brew "shellcheck"
+# Static checker for GitHub Actions workflow files
+brew "actionlint"
 # Automatically exclude development dependencies from Time Machine backups
 brew "asimov"
 # Zstandard is a real-time compression algorithm
@@ -14,6 +18,8 @@ brew "chezmoi"
 brew "coreutils"
 # Suite of command-line tools for converting to and working with CSV
 brew "csvkit"
+# Image format providing lossless and lossy compression for web images
+brew "webp"
 # Diff that understands syntax
 brew "difftastic"
 # Load/unload environment variables based on $PWD
@@ -30,16 +36,12 @@ brew "git"
 brew "git-secrets"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
-# OpenType text shaping engine
-brew "harfbuzz"
-# Open-source build automation tool based on the Groovy and Kotlin DSL
-brew "gradle"
 # GNU grep, egrep and fgrep
 brew "grep"
+# OpenType text shaping engine
+brew "harfbuzz"
 # User-friendly cURL replacement (command-line HTTP client)
 brew "httpie"
-# Image format providing lossless and lossy compression for web images
-brew "webp"
 # Tools and libraries to manipulate images in select formats
 brew "imagemagick"
 # Lightweight and flexible command-line JSON processor
@@ -64,8 +66,6 @@ brew "rename"
 brew "rsync"
 # Used as a compiler wrapper and avoids compilation when possible
 brew "sccache"
-# Static analysis and lint tool, for (ba)sh scripts
-brew "shellcheck"
 # SMART hard drive monitoring
 brew "smartmontools"
 # OCR (Optical Character Recognition) engine
