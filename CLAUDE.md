@@ -36,6 +36,13 @@ Guard OS-specific blocks with `{{- if eq .chezmoi.os "darwin" }}...{{- end }}`.
 - `run_onchange_brew.sh.tmpl` — runs `brew bundle` when the Brewfile changes
 - `run_symlinks.sh.tmpl` — creates symlinks for app prefs on every apply (macOS only)
 
+`dot_claude/CLAUDE.md` is the source of `~/.claude/CLAUDE.md`, so working in this repo would otherwise load the
+same instructions twice — once as user memory from `~/.claude/`, once as project memory from the source file.
+The `claudeMdExcludes` entry in `dot_claude/settings.json` suppresses the source copy. It is matched against
+*absolute* paths, which is what lets one pattern (`**/dot_claude/CLAUDE.md`) skip the source while leaving the
+applied `~/.claude/CLAUDE.md` loading normally — the two never collide despite the setting itself being applied
+to `~/.claude/settings.json`.
+
 ## Rules of Thumb
 
 - **New dotfile**: prefix with `dot_`, add `.tmpl` suffix only if it needs per-machine values.
