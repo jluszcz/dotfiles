@@ -24,6 +24,9 @@
     ],
     "deny": []
   },
+  "claudeMdExcludes": [
+    "**/dot_claude/CLAUDE.md"
+  ],
   "model": "opus",
   "enabledPlugins": {
     "rust-analyzer-lsp@claude-plugins-official": true,
