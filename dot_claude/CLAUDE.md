@@ -85,6 +85,21 @@ Break complex work into 3-5 stages. Document in `IMPLEMENTATION_PLAN.md`:
   - Self-review changes
   - Ensure commit message explains "why"
 
+### Documentation & Comments
+
+- **Describe the code as it is, not how it got there** - Inline documentation (javadoc, docstrings, rustdoc, etc.)
+  explains what something does and how to use it. It is not a changelog: no "changed to...", "previously...",
+  "new in this version", "replaces the old approach", or references to commits, PRs, or tickets. Git history
+  records change; documentation records the current contract.
+- **Comments explain how and why, not what** - The code already states the *what*. Comments carry the
+  non-obvious: why this approach over the alternative, what constraint forces the odd-looking line, what
+  invariant the reader must not break.
+- **Don't restate the obvious** - `// increment counter` above `counter++` is noise. If a comment only
+  paraphrases the line below it, delete the comment or rename things so the code says it.
+- **Same rule for comments** - No "was X, now Y" or "kept for backwards compatibility with the old
+  implementation" narration. If a comment describes a change rather than the code, it belongs in the
+  commit message.
+
 ### Error Handling
 
 - Fail fast with descriptive messages
