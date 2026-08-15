@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # Claude Code status line. Reads the session JSON on stdin and prints one
-# colored line: repo, branch, context-usage bar, cost, code velocity, model.
+# colored line: repo, branch, context-usage bar, subscription rate-limit usage,
+# code velocity, model.
 #
 # Colors are truecolor values chosen for a LIGHT terminal background — text sits
 # at or above ~4.5:1 contrast against white, bar glyphs above ~3.9:1.
@@ -12,26 +13,41 @@ input=$(cat)
 # One jq pass; "-" stands in for absent fields so no line comes back empty and
 # the fixed-order reads below stay aligned.
 fields=$(printf '%s' "$input" | jq -r '
-  [ (.workspace.current_dir // "-"),
+  [ (.session_id // "default"),
+    (.workspace.current_dir // "-"),
     (.workspace.repo.name // "-"),
     (.model.display_name // "-"),
-    (.cost.total_cost_usd // 0 | tostring),
     (.cost.total_lines_added // 0 | tostring),
     (.cost.total_lines_removed // 0 | tostring),
-    (.context_window.used_percentage // "-" | tostring)
+    (.context_window.used_percentage // "-" | tostring),
+    (.rate_limits.five_hour.used_percentage // "-" | tostring),
+    (.rate_limits.seven_day.used_percentage // "-" | tostring)
   ] | .[]')
 
 {
+  IFS= read -r session
   IFS= read -r dir
   IFS= read -r repo
   IFS= read -r model
-  IFS= read -r cost
   IFS= read -r added
   IFS= read -r removed
   IFS= read -r used
+  IFS= read -r five_hour
+  IFS= read -r seven_day
 } <<EOF
 $fields
 EOF
+
+# Claude Code re-invokes this script far more often than the line visibly
+# changes, and the git call below is the expensive part. Serve a cached line for
+# 5 seconds, keyed per session so concurrent sessions never show each other's.
+cache_dir="${TMPDIR:-/tmp}/claude-statusline"
+cache_file="${cache_dir}/$(printf '%s' "$session" | tr -c 'A-Za-z0-9._-' '_')"
+cache_mtime=$(stat -f %m "$cache_file" 2>/dev/null || stat -c %Y "$cache_file" 2>/dev/null || echo 0)
+if [ "$(( $(date +%s) - cache_mtime ))" -lt 5 ]; then
+  cat "$cache_file"
+  exit 0
+fi
 
 if [ "$repo" = "-" ]; then
   repo=$(basename "$dir")
@@ -56,22 +72,34 @@ else
 fi
 
 # Tier text colors run darker than the bar's equivalents: thin glyphs need more
-# contrast than solid blocks do.
+# contrast than solid blocks do. Context usage and the rate-limit readouts share
+# these thresholds, so a given color means the same severity wherever it appears.
+tier_color() { # tier_color <percent-int>
+  if [ "$1" -lt 20 ]; then
+    printf '0;120;50'
+  elif [ "$1" -lt 70 ]; then
+    printf '150;100;0'
+  elif [ "$1" -lt 90 ]; then
+    printf '185;85;0'
+  else
+    printf '190;30;20'
+  fi
+}
+
 if [ "$neutral" -eq 1 ]; then
   emoji="⏳"
   pct_color="140;140;140"
-elif [ "$usedint" -lt 20 ]; then
-  emoji="🟢"
-  pct_color="0;120;50"
-elif [ "$usedint" -lt 70 ]; then
-  emoji="⚡"
-  pct_color="150;100;0"
-elif [ "$usedint" -lt 90 ]; then
-  emoji="🔥"
-  pct_color="185;85;0"
 else
-  emoji="🚨"
-  pct_color="190;30;20"
+  pct_color=$(tier_color "$usedint")
+  if [ "$usedint" -lt 20 ]; then
+    emoji="🟢"
+  elif [ "$usedint" -lt 70 ]; then
+    emoji="⚡"
+  elif [ "$usedint" -lt 90 ]; then
+    emoji="🔥"
+  else
+    emoji="🚨"
+  fi
 fi
 
 # Green -> amber -> red, precomputed in OkLCh with chroma pinned near the sRGB
@@ -106,15 +134,35 @@ done
 
 sep=$(paint "140;140;140" "" "|")
 repo_seg=$(paint "146;94;0" "1;" "$repo")
-branch_seg=$(paint "0;109;119" "1;" "🌿 (${branch})")
+branch_seg=$(paint "0;109;119" "1;" "🌱 (${branch})")
 pct_seg=$(paint "$pct_color" "" "$pct")
-cost_seg=$(paint "146;94;0" "" "$(printf '$%.4f' "$cost")")
 added_seg=$(paint "0;120;50" "" "+${added}")
 removed_seg=$(paint "190;30;20" "" "-${removed}")
 model_seg=$(paint "150;40;160" "" "🤖 ${model}")
 
-printf '%s %s %s %s %s %s %s %s %s %s %s/%s %s %s\n' \
-  "$repo_seg" "$sep" "$branch_seg" "$sep" \
-  "$bar" "$emoji" "$pct_seg" "$sep" \
-  "$cost_seg" "$sep" "$added_seg" "$removed_seg" "$sep" \
-  "$model_seg"
+# Session/weekly rate-limit usage is only present once the account has an
+# active Claude.ai subscription and at least one API response has landed;
+# omit the segment entirely rather than print a placeholder.
+rate_parts=""
+if [ "$five_hour" != "-" ]; then
+  fivepct=$(printf '%.0f' "$five_hour")
+  rate_parts=$(paint "$(tier_color "$fivepct")" "" "5h:${fivepct}%")
+fi
+if [ "$seven_day" != "-" ]; then
+  weekpct=$(printf '%.0f' "$seven_day")
+  week_seg=$(paint "$(tier_color "$weekpct")" "" "7d:${weekpct}%")
+  if [ -n "$rate_parts" ]; then
+    rate_parts="${rate_parts} ${week_seg}"
+  else
+    rate_parts="$week_seg"
+  fi
+fi
+
+out="${repo_seg} ${sep} ${branch_seg} ${sep} ${bar} ${emoji} ${pct_seg}"
+if [ -n "$rate_parts" ]; then
+  out="${out} ${sep} ${rate_parts}"
+fi
+out="${out} ${sep} ${added_seg}/${removed_seg} ${sep} ${model_seg}"
+
+mkdir -p "$cache_dir"
+printf '%s\n' "$out" | tee "$cache_file"
