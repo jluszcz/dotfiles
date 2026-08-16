@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Claude Code status line. Reads the session JSON on stdin and prints one
 # colored line: repo, branch, context-usage bar, subscription rate-limit usage,
-# code velocity, model.
+# code velocity, model (with reasoning effort, when applicable).
 #
 # Colors are truecolor values chosen for a LIGHT terminal background — text sits
 # at or above ~4.5:1 contrast against white, bar glyphs above ~3.9:1.
@@ -17,6 +17,7 @@ fields=$(printf '%s' "$input" | jq -r '
     (.workspace.current_dir // "-"),
     (.workspace.repo.name // "-"),
     (.model.display_name // "-"),
+    (.effort.level // "-"),
     (.cost.total_lines_added // 0 | tostring),
     (.cost.total_lines_removed // 0 | tostring),
     (.context_window.used_percentage // "-" | tostring),
@@ -29,6 +30,7 @@ fields=$(printf '%s' "$input" | jq -r '
   IFS= read -r dir
   IFS= read -r repo
   IFS= read -r model
+  IFS= read -r effort
   IFS= read -r added
   IFS= read -r removed
   IFS= read -r used
@@ -138,7 +140,13 @@ branch_seg=$(paint "0;109;119" "1;" "🌱 (${branch})")
 pct_seg=$(paint "$pct_color" "" "$pct")
 added_seg=$(paint "0;120;50" "" "+${added}")
 removed_seg=$(paint "190;30;20" "" "-${removed}")
-model_seg=$(paint "150;40;160" "" "🤖 ${model}")
+# Effort is only present when the current model supports reasoning effort;
+# omit the "(...)" entirely rather than print a placeholder.
+model_text="🤖 ${model}"
+if [ "$effort" != "-" ]; then
+  model_text="${model_text} (${effort})"
+fi
+model_seg=$(paint "150;40;160" "" "$model_text")
 
 # Session/weekly rate-limit usage is only present once the account has an
 # active Claude.ai subscription and at least one API response has landed;
