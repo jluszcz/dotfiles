@@ -100,6 +100,14 @@ Break complex work into 3-5 stages. Document in `IMPLEMENTATION_PLAN.md`:
   implementation" narration. If a comment describes a change rather than the code, it belongs in the
   commit message.
 
+### Personal Data
+
+- **Never write real email addresses into persistent artifacts** - Code, tests, fixtures, docs, config,
+  commit messages, and issue/PR text all outlive the conversation that produced them. Use a reserved
+  placeholder domain instead (`user@example.com`, RFC 2606), or read the value at runtime from config or
+  the environment. This includes the user's own address: knowing it from context is not permission to
+  commit it. Authorship metadata that git itself records is exempt.
+
 ### Error Handling
 
 - Fail fast with descriptive messages
@@ -172,5 +180,6 @@ When multiple valid approaches exist, choose based on:
 
 **NEVER**:
 - Use `--no-verify` to bypass commit hooks
+- Write a real email address into a file, commit message, or PR - use `user@example.com`
 - Make assumptions - verify with existing code
 - Amend existing commits
