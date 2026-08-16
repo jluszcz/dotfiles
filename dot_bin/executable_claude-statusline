@@ -40,11 +40,11 @@ EOF
 
 # Claude Code re-invokes this script far more often than the line visibly
 # changes, and the git call below is the expensive part. Serve a cached line for
-# 5 seconds, keyed per session so concurrent sessions never show each other's.
+# 30 seconds, keyed per session so concurrent sessions never show each other's.
 cache_dir="${TMPDIR:-/tmp}/claude-statusline"
 cache_file="${cache_dir}/$(printf '%s' "$session" | tr -c 'A-Za-z0-9._-' '_')"
 cache_mtime=$(stat -f %m "$cache_file" 2>/dev/null || stat -c %Y "$cache_file" 2>/dev/null || echo 0)
-if [ "$(( $(date +%s) - cache_mtime ))" -lt 5 ]; then
+if [ "$(( $(date +%s) - cache_mtime ))" -lt 30 ]; then
   cat "$cache_file"
   exit 0
 fi
