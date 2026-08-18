@@ -45,7 +45,15 @@ EOF
 # 30 seconds, keyed per session so concurrent sessions never show each other's.
 cache_dir="${TMPDIR:-/tmp}/claude-statusline"
 cache_file="${cache_dir}/$(printf '%s' "$session" | tr -c 'A-Za-z0-9._-' '_')"
-cache_mtime=$(stat -f %m "$cache_file" 2>/dev/null || stat -c %Y "$cache_file" 2>/dev/null || echo 0)
+# GNU and BSD stat disagree about -f: BSD reads it as the format string, GNU as
+# --file-system, which makes "%m" a filename and dumps filesystem details to
+# stdout before failing -- poisoning the fallback. Probe the GNU spelling first,
+# then require digits so an unrecognized stat is a cache miss, not a fatal
+# arithmetic error below.
+cache_mtime=$(stat -c %Y "$cache_file" 2>/dev/null || stat -f %m "$cache_file" 2>/dev/null || true)
+case $cache_mtime in
+  '' | *[!0-9]*) cache_mtime=0 ;;
+esac
 if [ "$(( $(date +%s) - cache_mtime ))" -lt 30 ]; then
   cat "$cache_file"
   exit 0
