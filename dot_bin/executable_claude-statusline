@@ -22,7 +22,9 @@ fields=$(printf '%s' "$input" | jq -r '
     (.cost.total_lines_removed // 0 | tostring),
     (.context_window.used_percentage // "-" | tostring),
     (.rate_limits.five_hour.used_percentage // "-" | tostring),
-    (.rate_limits.seven_day.used_percentage // "-" | tostring)
+    (.rate_limits.seven_day.used_percentage // "-" | tostring),
+    (.rate_limits.five_hour.resets_at // "-" | tostring),
+    (.rate_limits.seven_day.resets_at // "-" | tostring)
   ] | .[]')
 
 {
@@ -36,6 +38,8 @@ fields=$(printf '%s' "$input" | jq -r '
   IFS= read -r used
   IFS= read -r five_hour
   IFS= read -r seven_day
+  IFS= read -r five_hour_reset
+  IFS= read -r seven_day_reset
 } <<EOF
 $fields
 EOF
@@ -93,6 +97,28 @@ tier_color() { # tier_color <percent-int>
     printf '185;85;0'
   else
     printf '190;30;20'
+  fi
+}
+
+# GNU and BSD date disagree about turning an epoch seconds value into a
+# formatted date: GNU wants -d "@<epoch>", BSD wants -r <epoch>. Probe the GNU
+# spelling first, same convention as the stat fallback above.
+fmt_time() { # fmt_time <epoch> <strftime-format>
+  date -d "@$1" "$2" 2>/dev/null || date -r "$1" "$2"
+}
+
+# Reset timestamps are only shown once a limit is nearly exhausted, so keep
+# the format terse: weekday, hour with no leading zero, minutes only when
+# non-zero, lowercase am/pm -- e.g. "Sat 1am" or "Sun 1:30pm".
+format_reset() { # format_reset <epoch-seconds>
+  local min day_hour ampm
+  min=$(fmt_time "$1" '+%M')
+  day_hour=$(fmt_time "$1" '+%a %-I')
+  ampm=$(fmt_time "$1" '+%p' | tr '[:upper:]' '[:lower:]')
+  if [ "$min" = "00" ]; then
+    printf '%s%s' "$day_hour" "$ampm"
+  else
+    printf '%s:%s%s' "$day_hour" "$min" "$ampm"
   fi
 }
 
@@ -162,11 +188,19 @@ model_seg=$(paint "150;40;160" "" "$model_text")
 rate_parts=""
 if [ "$five_hour" != "-" ]; then
   fivepct=$(printf '%.0f' "$five_hour")
-  rate_parts=$(paint "$(tier_color "$fivepct")" "" "5h:${fivepct}%")
+  five_text="5h:${fivepct}%"
+  if [ "$fivepct" -gt 95 ] && [ "$five_hour_reset" != "-" ]; then
+    five_text="${five_text} ($(format_reset "$five_hour_reset"))"
+  fi
+  rate_parts=$(paint "$(tier_color "$fivepct")" "" "$five_text")
 fi
 if [ "$seven_day" != "-" ]; then
   weekpct=$(printf '%.0f' "$seven_day")
-  week_seg=$(paint "$(tier_color "$weekpct")" "" "7d:${weekpct}%")
+  week_text="7d:${weekpct}%"
+  if [ "$weekpct" -gt 95 ] && [ "$seven_day_reset" != "-" ]; then
+    week_text="${week_text} ($(format_reset "$seven_day_reset"))"
+  fi
+  week_seg=$(paint "$(tier_color "$weekpct")" "" "$week_text")
   if [ -n "$rate_parts" ]; then
     rate_parts="${rate_parts} ${week_seg}"
   else
