@@ -104,18 +104,31 @@ gct() {
 # this function at parse time.
 unalias grt 2>/dev/null
 
-# Remove a worktree created by gct, along with its branch
+# Remove a worktree created by gct, along with its branch. With no argument,
+# removes the worktree you are standing in, after confirming.
 grt() {
-    if [ -z "$1" ]; then
-        echo "usage: grt <branch>" >&2
-        return 1
-    fi
-    local dir main
-    dir=$(_worktree_path "$1") || return 1
+    local branch dir main reply
     main=$(_main_worktree) || return 1
+    if [ -n "$1" ]; then
+        branch=$1
+        dir=$(_worktree_path "$1") || return 1
+    else
+        dir=$(git rev-parse --show-toplevel) || return 1
+        if [ "$dir" = "$main" ]; then
+            echo "usage: grt [branch]" >&2
+            return 1
+        fi
+        branch=$(git symbolic-ref --short HEAD) || return 1
+        printf 'Remove worktree %s and branch %s? [y/N] ' "$dir" "$branch"
+        read -r reply
+        case "$reply" in
+            y|Y) ;;
+            *) return 1 ;;
+        esac
+    fi
     # git refuses to remove the worktree you are standing in
     cd "$main" 2>/dev/null || cd ~ || return 1
-    git worktree remove "$dir" && git branch -D "$1"
+    git worktree remove "$dir" && git branch -D "$branch"
 }
 
 # Misc.
