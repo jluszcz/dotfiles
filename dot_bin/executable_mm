@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 # shellcheck source=dot_config/rustbin
 . "$HOME/.config/rustbin"
-rustbin "$HOME/Documents/Programs/MoneyManager" mm "$@"
+rustbin "$HOME/Documents/Programs/MisterManager" mm "$@"
