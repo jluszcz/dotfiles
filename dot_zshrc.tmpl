@@ -72,15 +72,22 @@ gmerge() {
     git switch "$base" && git pull && git branch -D "$branch"
 }
 
-# /tmp/<repo>-<branch>, the worktree location shared by gct and grt. Derived from the
-# common git dir so it resolves to the same path from inside a worktree.
-_worktree_path() {
+# The repository's main working tree. Derived from the common git dir, so it
+# resolves to the same path from inside a worktree.
+_main_worktree() {
     local common
     common=$(git rev-parse --path-format=absolute --git-common-dir) || return 1
-    echo "/tmp/$(basename "$(dirname "$common")")-$1"
+    dirname "$common"
 }
 
-# Create a worktree for a new branch off origin's default branch
+# /tmp/<repo>-<branch>, the worktree location shared by gct and grt
+_worktree_path() {
+    local main
+    main=$(_main_worktree) || return 1
+    echo "/tmp/$(basename "$main")-$1"
+}
+
+# Create a worktree for a new branch off origin's default branch, and cd into it
 gct() {
     if [ -z "$1" ]; then
         echo "usage: gct <branch>" >&2
@@ -90,7 +97,7 @@ gct() {
     dir=$(_worktree_path "$1") || return 1
     git fetch origin || return 1
     base=$(_default_branch) || return 1
-    git worktree add -b "$1" "$dir" "origin/$base"
+    git worktree add -b "$1" "$dir" "origin/$base" && cd "$dir"
 }
 
 # oh-my-zsh's git plugin claims grt as a cd-to-repo-root alias, which would shadow
@@ -103,8 +110,11 @@ grt() {
         echo "usage: grt <branch>" >&2
         return 1
     fi
-    local dir
+    local dir main
     dir=$(_worktree_path "$1") || return 1
+    main=$(_main_worktree) || return 1
+    # git refuses to remove the worktree you are standing in
+    cd "$main" 2>/dev/null || cd ~ || return 1
     git worktree remove "$dir" && git branch -D "$1"
 }
 
