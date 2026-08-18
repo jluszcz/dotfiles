@@ -49,14 +49,63 @@ alias gst='git status'
 alias gsw='git switch'
 alias wip="git add . && git commit -a -m '[Work In Progress]' --allow-empty"
 
-# Switch to main, pull, and delete the branch you were on
+# origin's default branch name (e.g. main), read from the local origin/HEAD ref.
+# That ref is absent in some clones, so fall back to asking the remote and recording it.
+_default_branch() {
+    local ref
+    ref=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)
+    if [ -z "$ref" ]; then
+        git remote set-head origin --auto >/dev/null || return 1
+        ref=$(git symbolic-ref --short refs/remotes/origin/HEAD) || return 1
+    fi
+    echo "${ref#origin/}"
+}
+
+# Switch to the default branch, pull, and delete the branch you were on
 gmerge() {
-    local branch
+    local branch base
     branch=$(git symbolic-ref --short HEAD) || return 1
-    if [ "$branch" = "main" ]; then
+    base=$(_default_branch) || return 1
+    if [ "$branch" = "$base" ]; then
         return 0
     fi
-    git switch main && git pull && git branch -D "$branch"
+    git switch "$base" && git pull && git branch -D "$branch"
+}
+
+# /tmp/<repo>-<branch>, the worktree location shared by gct and grt. Derived from the
+# common git dir so it resolves to the same path from inside a worktree.
+_worktree_path() {
+    local common
+    common=$(git rev-parse --path-format=absolute --git-common-dir) || return 1
+    echo "/tmp/$(basename "$(dirname "$common")")-$1"
+}
+
+# Create a worktree for a new branch off origin's default branch
+gct() {
+    if [ -z "$1" ]; then
+        echo "usage: gct <branch>" >&2
+        return 1
+    fi
+    local dir base
+    dir=$(_worktree_path "$1") || return 1
+    git fetch origin || return 1
+    base=$(_default_branch) || return 1
+    git worktree add -b "$1" "$dir" "origin/$base"
+}
+
+# oh-my-zsh's git plugin claims grt as a cd-to-repo-root alias, which would shadow
+# this function at parse time.
+unalias grt 2>/dev/null
+
+# Remove a worktree created by gct
+grt() {
+    if [ -z "$1" ]; then
+        echo "usage: grt <branch>" >&2
+        return 1
+    fi
+    local dir
+    dir=$(_worktree_path "$1") || return 1
+    git worktree remove "$dir"
 }
 
 # Misc.
@@ -83,16 +132,17 @@ if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     }
 
     rup() {
-        local branch="Deps-$RANDOM"
-        git switch main && git pull && git switch -C "$branch" -t origin/main && cargo update && cargo outdated --root-deps-only || return 1
+        local branch="Deps-$RANDOM" base
+        base=$(_default_branch) || return 1
+        git switch "$base" && git pull && git switch -C "$branch" -t "origin/$base" && cargo update && cargo outdated --root-deps-only || return 1
         if git diff --quiet; then
-            git switch main && git branch -D "$branch"
+            git switch "$base" && git branch -D "$branch"
             return $?
         fi
 
-        cball && g commit -a -m "Update dependencies" && git push origin HEAD && gh pr create --title "Update dependencies" --body "" --base main --head "$branch" || return 1
+        cball && g commit -a -m "Update dependencies" && git push origin HEAD && gh pr create --title "Update dependencies" --body "" --base "$base" --head "$branch" || return 1
 
-        echo -e "\nRun 'gmerge' to switch back to main and delete the branch once merged\n"
+        echo -e "\nRun 'gmerge' to switch back to $base and delete the branch once merged\n"
     }
 
     {{- if eq .chezmoi.os "darwin" }}
