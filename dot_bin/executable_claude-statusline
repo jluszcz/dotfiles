@@ -110,15 +110,24 @@ fmt_time() { # fmt_time <epoch> <strftime-format>
 # Reset timestamps are only shown once a limit is nearly exhausted, so keep
 # the format terse: weekday, hour with no leading zero, minutes only when
 # non-zero, lowercase am/pm -- e.g. "Sat 1am" or "Sun 1:30pm".
+#
+# All four pieces come out of one date call, delimited: this script exists to be
+# cheap enough to run on every prompt, and a field-per-call version would fork
+# date up to six times per timestamp. The case below lowercases %p without a
+# further fork, since bash 3.2 (what macOS ships) has no ${var,,}.
 format_reset() { # format_reset <epoch-seconds>
-  local min day_hour ampm
-  min=$(fmt_time "$1" '+%M')
-  day_hour=$(fmt_time "$1" '+%a %-I')
-  ampm=$(fmt_time "$1" '+%p' | tr '[:upper:]' '[:lower:]')
+  local day hour min ampm
+  IFS='|' read -r day hour min ampm <<EOF
+$(fmt_time "$1" '+%a|%-I|%M|%p')
+EOF
+  case $ampm in
+    AM) ampm="am" ;;
+    PM) ampm="pm" ;;
+  esac
   if [ "$min" = "00" ]; then
-    printf '%s%s' "$day_hour" "$ampm"
+    printf '%s %s%s' "$day" "$hour" "$ampm"
   else
-    printf '%s:%s%s' "$day_hour" "$min" "$ampm"
+    printf '%s %s:%s%s' "$day" "$hour" "$min" "$ampm"
   fi
 }
 
