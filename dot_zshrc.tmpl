@@ -97,7 +97,7 @@ gct() {
 # this function at parse time.
 unalias grt 2>/dev/null
 
-# Remove a worktree created by gct
+# Remove a worktree created by gct, along with its branch
 grt() {
     if [ -z "$1" ]; then
         echo "usage: grt <branch>" >&2
@@ -105,7 +105,7 @@ grt() {
     fi
     local dir
     dir=$(_worktree_path "$1") || return 1
-    git worktree remove "$dir"
+    git worktree remove "$dir" && git branch -D "$1"
 }
 
 # Misc.
