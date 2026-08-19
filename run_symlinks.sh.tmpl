@@ -29,6 +29,16 @@ if [ -d "$HOME/Dropbox" ]; then
     ln -svfh "$HOME/Dropbox/Money" "$HOME/Documents/"
 fi
 
+# Symlink MisterManager's database out of Dropbox
+if [ -f "$HOME/Dropbox/Money/money.db" ]; then
+    MISTERMANAGER_DIR="$HOME/.local/share/mistermanager"
+    # A regular file here is a local database, not a stale link, so leave it alone
+    if [ ! -e "${MISTERMANAGER_DIR}/money.db" ] || [ -L "${MISTERMANAGER_DIR}/money.db" ]; then
+        mkdir -p "${MISTERMANAGER_DIR}"
+        ln -svfh "$HOME/Dropbox/Money/money.db" "${MISTERMANAGER_DIR}/money.db"
+    fi
+fi
+
 # Copy Obsidian files into ~/Dropbox
 if [ -d "$HOME/Dropbox" ] && [ -f "$HOME/.obsidian/Daily Template.md" ]; then
     mkdir -p "$HOME/Dropbox/Obsidian/Templates"
