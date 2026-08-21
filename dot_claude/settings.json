@@ -36,6 +36,7 @@
     "superpowers@claude-plugins-official": true
   },
   "theme": "light",
+  "tui": "fullscreen",
   "mcpServers": {
     "context7": {
       "command": "npx",

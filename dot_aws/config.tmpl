@@ -6,4 +6,7 @@ sso_account_id = {{ .aws_sso_account_id }}
 sso_role_name = AdministratorAccess
 region = {{ .aws_region }}
 cli_pager =
+
+[profile mistermanager]
+region = {{ .aws_region }}
 {{- end }}
