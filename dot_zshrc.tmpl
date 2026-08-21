@@ -128,7 +128,12 @@ grt() {
     fi
     # git refuses to remove the worktree you are standing in
     cd "$main" 2>/dev/null || cd ~ || return 1
-    git worktree remove "$dir" && git branch -D "$branch"
+    git worktree remove "$dir" && git branch -D "$branch" || return 1
+    # Pulling is only safe when the cd landed in the main worktree and it is
+    # sitting on the default branch, rather than a branch of its own.
+    if [ "$PWD" = "$main" ] && [ "$(git symbolic-ref --short HEAD 2>/dev/null)" = "$(_default_branch)" ]; then
+        git pull
+    fi
 }
 
 # Misc.
