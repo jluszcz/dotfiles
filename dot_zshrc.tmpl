@@ -80,11 +80,12 @@ _main_worktree() {
     dirname "$common"
 }
 
-# /tmp/<repo>-<branch>, the worktree location shared by gct and grt
+# <repo>-<branch> alongside the main working tree, the worktree location shared by
+# gct and grt. Living beside the repo rather than under /tmp, they survive reboots.
 _worktree_path() {
     local main
     main=$(_main_worktree) || return 1
-    echo "/tmp/$(basename "$main")-$1"
+    echo "$(dirname "$main")/$(basename "$main")-$1"
 }
 
 # Create a worktree for a new branch off origin's default branch, and cd into it
