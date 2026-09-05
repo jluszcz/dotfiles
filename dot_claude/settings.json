@@ -35,6 +35,7 @@
     "code-review@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true
   },
+  "outputStyle": "Concise",
   "theme": "light",
   "tui": "fullscreen",
   "mcpServers": {
