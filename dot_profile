@@ -27,7 +27,6 @@ rc() {
     rclone copy /volume1/Plex/Library s3-media:jluszcz-physical-media \
         --exclude '.DS_Store' \
         --exclude '@eaDir/**' \
-        --exclude '/Movies/Kundun (1997).mkv' \
         --size-only \
         --immutable \
         --fast-list \
