@@ -50,9 +50,10 @@ Interactive shells are zsh (`dot_zshrc.tmpl`) on every machine except the Synolo
 `.tmux.conf`, `.bin/up-rc` and `.config/rclone/` are ignored everywhere else.
 
 `dot_profile` is therefore Synology-only and has to stay POSIX — `case ... esac` rather than `[[ ]]`, no arrays, no
-`local`, no `+=`. Scripts under `dot_bin/` are exempt: they declare `#!/usr/bin/env bash` and bash is installed on the
-NAS. Neither `dot_profile` nor `dot_zshrc.tmpl` matches the shellcheck hooks' `files` patterns (see Checks), so
-nothing catches a bashism in either one automatically.
+`local`, no `+=`. Under `dot_bin/` the shebang decides rather than the directory: bash is installed on the NAS, so a
+script declaring `#!/usr/bin/env bash` may use bashisms, while the several declaring `#!/usr/bin/env sh` may not.
+shellcheck infers its dialect from the shebang and catches a bashism in the latter — but neither `dot_profile` nor
+`dot_zshrc.tmpl` matches the hooks' `files` patterns (see Checks), so nothing catches one there.
 
 ## Rules of Thumb
 
