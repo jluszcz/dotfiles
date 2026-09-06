@@ -1,15 +1,5 @@
 {{- $email := promptStringOnce . "email" "Email address" -}}
 
-{{/* AWS config values are only used on macOS, so only prompt there */}}
-{{- $aws_region := "" -}}
-{{- $aws_sso_url := "" -}}
-{{- $aws_sso_account_id := "" -}}
-{{- if eq .chezmoi.os "darwin" -}}
-{{- $aws_region = promptStringOnce . "aws_region" "Default AWS Region" -}}
-{{- $aws_sso_url = promptStringOnce . "aws_sso_url" "AWS SSO URL" -}}
-{{- $aws_sso_account_id = promptStringOnce . "aws_sso_account_id" "AWS SSO Account ID" -}}
-{{- end -}}
-
 {{- if eq .chezmoi.hostname "Synology" }}
 # Synology mounts /tmp with noexec, use home directory instead
 scriptTempDir = "{{ .chezmoi.homeDir }}/.cache/chezmoi/tmp"
@@ -17,6 +7,3 @@ scriptTempDir = "{{ .chezmoi.homeDir }}/.cache/chezmoi/tmp"
 
 [data]
 email = {{ $email | quote }}
-aws_region = {{ $aws_region | quote }}
-aws_sso_url = {{ $aws_sso_url | quote }}
-aws_sso_account_id = {{ $aws_sso_account_id | quote }}

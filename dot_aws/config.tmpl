@@ -1,12 +1,19 @@
 {{- if eq .chezmoi.os "darwin" -}}
+{{- $region := onepasswordRead "op://Personal/Amazon AWS SSO/region" -}}
 [profile default]
-sso_start_url = {{ .aws_sso_url }}
-sso_region = {{ .aws_region }}
-sso_account_id = {{ .aws_sso_account_id }}
+sso_start_url = {{ onepasswordRead "op://Personal/Amazon AWS SSO/website" }}
+sso_region = {{ $region }}
+sso_account_id = {{ onepasswordRead "op://Personal/Amazon AWS SSO/account" }}
 sso_role_name = AdministratorAccess
-region = {{ .aws_region }}
+region = {{ $region }}
 cli_pager =
 
 [profile mistermanager]
-region = {{ .aws_region }}
+region = {{ $region }}
+
+[profile spoilies]
+region = {{ $region }}
+role_arn = arn:aws:iam::{{ onepasswordRead "op://Personal/Spoilies/account" }}:role/OrganizationAccountAccessRole
+source_profile = default
+cli_pager =
 {{- end }}
