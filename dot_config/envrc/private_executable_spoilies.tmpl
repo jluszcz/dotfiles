@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+export AWS_PROFILE="spoilies"
+export TF_VAR_alert_email="{{ .email | replace "@" "+spoilies@" }}"
