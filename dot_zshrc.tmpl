@@ -108,7 +108,7 @@ unalias grt 2>/dev/null
 # Remove a worktree created by gct, along with its branch. With no argument,
 # removes the worktree you are standing in, after confirming.
 grt() {
-    local branch dir head main reply
+    local branch dir head main parent reply root
     main=$(_main_worktree) || return 1
     if [ -n "$1" ]; then
         branch=$1
@@ -129,7 +129,18 @@ grt() {
     fi
     # git refuses to remove the worktree you are standing in
     cd "$main" 2>/dev/null || cd ~ || return 1
-    git worktree remove "$dir" && git branch -D "$branch" || return 1
+    # --force because a worktree with modified or untracked files would otherwise
+    # abort before the branch is deleted, leaving both behind
+    git worktree remove --force "$dir" && git branch -D "$branch" || return 1
+    # A slash in the branch name nests the worktree (repo-jl/foo), and git leaves
+    # the intermediate directories behind. rmdir deletes only empty ones, so this
+    # stops at the first still in use and never climbs past where worktrees live.
+    root=$(dirname "$main")
+    parent=$(dirname "$dir")
+    while [ "$parent" != "$root" ] && [ "$parent" != "/" ]; do
+        rmdir "$parent" 2>/dev/null || break
+        parent=$(dirname "$parent")
+    done
     # Pulling is only safe when the cd landed in the main worktree and it is
     # sitting on the default branch, rather than a branch of its own. A detached
     # HEAD prints nothing, as does a failing _default_branch, so an empty head
