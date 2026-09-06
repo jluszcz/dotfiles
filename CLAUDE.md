@@ -43,6 +43,17 @@ The `claudeMdExcludes` entry in `dot_claude/settings.json` suppresses the source
 applied `~/.claude/CLAUDE.md` loading normally — the two never collide despite the setting itself being applied
 to `~/.claude/settings.json`.
 
+## Shells
+
+Interactive shells are zsh (`dot_zshrc.tmpl`) on every machine except the Synology NAS, which logs in under POSIX
+`sh`. `.chezmoiignore.tmpl` enforces the split: `.zshrc` is ignored on the `Synology` host, while `.profile`,
+`.tmux.conf`, `.bin/up-rc` and `.config/rclone/` are ignored everywhere else.
+
+`dot_profile` is therefore Synology-only and has to stay POSIX — `case ... esac` rather than `[[ ]]`, no arrays, no
+`local`, no `+=`. Scripts under `dot_bin/` are exempt: they declare `#!/usr/bin/env bash` and bash is installed on the
+NAS. Neither `dot_profile` nor `dot_zshrc.tmpl` matches the shellcheck hooks' `files` patterns (see Checks), so
+nothing catches a bashism in either one automatically.
+
 ## Rules of Thumb
 
 - **New dotfile**: prefix with `dot_`, add `.tmpl` suffix only if it needs per-machine values.
