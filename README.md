@@ -14,6 +14,11 @@ sudo xcode-select --install
 
 brew install chezmoi
 
+# chezmoi pulls secrets from 1Password at apply time, so the CLI has to be
+# installed and signed in first
+brew install --cask 1password-cli
+op signin
+
 chezmoi init git@github.com:jluszcz/dotfiles.git
 ```
 

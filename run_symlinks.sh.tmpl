@@ -76,6 +76,11 @@ if [ -d "$HOME/Documents/Programs/Seen" ]; then
     rm -f "$HOME/Documents/Programs/Seen/.env"
     ln -svfh "$HOME/.config/envrc/seen" "$HOME/Documents/Programs/Seen/.env"
 fi
+
+if [ -d "$HOME/Documents/Programs/Spoilies" ]; then
+    rm -f "$HOME/Documents/Programs/Spoilies/.envrc"
+    ln -svfh "$HOME/.config/envrc/spoilies" "$HOME/Documents/Programs/Spoilies/.envrc"
+fi
 # End .env files
 
 # Symlink oh-my-zsh theme
