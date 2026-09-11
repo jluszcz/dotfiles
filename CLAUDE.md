@@ -38,10 +38,15 @@ Guard OS-specific blocks with `{{- if eq .chezmoi.os "darwin" }}...{{- end }}`.
 
 `dot_claude/CLAUDE.md` is the source of `~/.claude/CLAUDE.md`, so working in this repo would otherwise load the
 same instructions twice — once as user memory from `~/.claude/`, once as project memory from the source file.
-The `claudeMdExcludes` entry in `dot_claude/settings.json` suppresses the source copy. It is matched against
+The `claudeMdExcludes` entry in `dot_claude/settings.json.tmpl` suppresses the source copy. It is matched against
 *absolute* paths, which is what lets one pattern (`**/dot_claude/CLAUDE.md`) skip the source while leaving the
 applied `~/.claude/CLAUDE.md` loading normally — the two never collide despite the setting itself being applied
 to `~/.claude/settings.json`.
+
+The settings file is a template so the iTerm2 `cc-status` hooks can be guarded on `darwin`: `~/.config/iterm2/cc-status`
+is a symlink iTerm2 installs into its own app bundle, so on the Synology every hook would fire a missing command.
+Claude Code rewrites `~/.claude/settings.json` itself (reordering keys, escaping `/`), so `chezmoi diff` on it is
+mostly noise; compare the parsed JSON instead.
 
 ## Shells
 
@@ -80,11 +85,19 @@ PR — the repo previously had no CI at all, so nothing but local discipline enf
 
 Shell linting takes two hooks, because shellcheck cannot parse chezmoi's `{{ ... }}`:
 
-- `shellcheck` covers the plain scripts under `dot_bin/` and `dot_config/rustbin`, excluding `.tmpl` files.
+- `shellcheck` covers the plain scripts under `dot_bin/`, `dot_config/rustbin` and `scripts/`, excluding `.tmpl` files.
 - `shellcheck-templates` (`scripts/shellcheck-templates.sh`) renders each `run_*.sh.tmpl` with
   `chezmoi execute-template` and pipes the result through shellcheck. Its `files` pattern used to be part of the
   first hook's, where the `.tmpl` exclusion silently cancelled it out — **zero `run_` scripts were linted by
   anything**, despite the config appearing to cover them.
+
+JSON linting splits the same way, for the same reason:
+
+- `check-json` covers plain `*.json` files; its pattern does not reach a `*.json.tmpl`.
+- `check-json-templates` (`scripts/check-json-templates.sh`) renders each `*.json.tmpl` and parses the result with
+  `python3 -m json.tool`. Without it a template that renders to malformed JSON surfaces only at apply time, in a
+  config the affected tool then silently ignores. `private_` templates are excluded: rendering one calls
+  `onepasswordRead`, which CI cannot satisfy.
 
 A rendered template only exercises the branches that this machine's context selects, so an
 `{{ if eq .chezmoi.os "darwin" }}` block is checked when you run the hooks on macOS, and the `linux` side is what CI
