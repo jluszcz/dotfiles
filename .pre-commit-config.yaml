@@ -25,7 +25,7 @@ repos:
     # {{ ... }} syntax; the local hook below renders them first and covers them.
     -   id: shellcheck
         types: [file]
-        files: 'dot_bin/executable_|dot_config/rustbin'
+        files: 'dot_bin/executable_|dot_config/rustbin|^scripts/'
         exclude: '(\.tmpl$|executable_(plex-sync|rust-reminder))'
         args: [-x]
 -   repo: local
@@ -35,3 +35,11 @@ repos:
         entry: scripts/shellcheck-templates.sh
         language: script
         files: '^run_.*\.sh\.tmpl$'
+    -   id: check-json-templates
+        name: check chezmoi json templates
+        entry: scripts/check-json-templates.sh
+        language: script
+        files: '\.json\.tmpl$'
+        # private_ templates pull secrets with onepasswordRead, which cannot
+        # render in CI — there is no op binary and no unlocked vault.
+        exclude: 'private_'
