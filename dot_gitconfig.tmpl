@@ -8,7 +8,17 @@
 
 {{- if eq .chezmoi.os "darwin" }}
 [diff]
-    external = difft
+	tool = difftastic
+
+[difftool]
+	prompt = false
+
+[difftool "difftastic"]
+	cmd = difft "$LOCAL" "$REMOTE"
+
+[alias]
+	dft = difftool
+	dlog = -c diff.external=difft log -p --ext-diff
 {{- end }}
 
 [color]
