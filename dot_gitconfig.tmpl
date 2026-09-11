@@ -13,7 +13,11 @@
 [difftool]
 	prompt = false
 
-	cmd = difft \"$LOCAL\" \"$REMOTE\"
+[difftool "difftastic"]
+	cmd = difft --color=always \"$LOCAL\" \"$REMOTE\"
+
+[pager]
+	difftool = true
 
 [alias]
 	dft = difftool
