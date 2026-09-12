@@ -1,0 +1,8 @@
+[report]
+dir = "{{ .chezmoi.homeDir }}/Dropbox/Money"
+
+[backup]
+bucket = "mistermanager-{{ onepasswordRead "op://Personal/Amazon AWS SSO/account" }}-{{ onepasswordRead "op://Personal/Amazon AWS SSO/region" }}-an"
+
+[sec]
+contact = "{{ .email }}"
