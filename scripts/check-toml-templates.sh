@@ -13,15 +13,25 @@
 
 set -eu
 
+# .email lives in the config that `chezmoi init` writes, which a CI runner never
+# has, so the render needs it supplied. A stub keeps the result identical on
+# every machine and keeps a real address out of the repo — only the syntax
+# around the value matters here.
+override_data='{"email":"user@example.com"}'
+
 status=0
 
 for template in "$@"; do
+    # --init defines promptStringOnce, which .chezmoi.toml.tmpl calls and plain
+    # execute-template leaves undefined.
+    #
     # onepasswordRead needs an unlocked vault, which CI has no way to provide,
     # and skipping every template that calls it would leave this hook with
     # nothing to check. printf returns its format string unchanged, so swapping
     # the two stands each secret in as its own op:// reference — the wrong
     # value, but a quoted string, which is all the parse below looks at.
-    rendered=$(sed 's/onepasswordRead/printf/g' "$template" | chezmoi execute-template --source .) || {
+    rendered=$(sed 's/onepasswordRead/printf/g' "$template" |
+        chezmoi execute-template --source . --init --override-data "$override_data") || {
         echo "$template: chezmoi could not render this template" >&2
         status=1
         continue

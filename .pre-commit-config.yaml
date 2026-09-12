@@ -48,6 +48,3 @@ repos:
         entry: scripts/check-toml-templates.sh
         language: script
         files: '\.toml\.tmpl$'
-        # chezmoi init defines promptStringOnce for its own config template;
-        # execute-template does not, so this one cannot be rendered here.
-        exclude: '^\.chezmoi\.toml\.tmpl$'
