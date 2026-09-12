@@ -70,16 +70,32 @@ def detect_show_season(files):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog='plex-sync', description='Sync media to Plex on Synology')
-    parser.add_argument('-c', dest='config_file', metavar='config_file')
+    parser = argparse.ArgumentParser(
+        prog='plex-sync',
+        description="""Copy the .mkv files in a directory to the Plex library on the Synology,
+then remove the local copies and the directory.""",
+        epilog="""settings come from three places, later ones winning: a '.plex-sync' file in
+directory (KEY=VALUE lines: MEDIA_TYPE=movies|tv, SHOW_NAME, SEASON), then
+these options, then interactive prompts for whatever is still missing. For TV,
+the show and season are guessed from filenames like 'Show Name - s01e02.mkv'.""",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument('-c', dest='config_file', metavar='config_file',
+                        help="config file to read instead of directory/.plex-sync")
     media = parser.add_mutually_exclusive_group()
-    media.add_argument('-m', dest='media_type', action='store_const', const='movies')
-    media.add_argument('-t', dest='media_type', action='store_const', const='tv')
-    parser.add_argument('-n', dest='show_name', metavar='name')
-    parser.add_argument('-s', dest='season', metavar='number', type=int)
-    parser.add_argument('-d', dest='dry_run', action='store_true')
-    parser.add_argument('-o', dest='overwrite', action='store_true')
-    parser.add_argument('directory')
+    media.add_argument('-m', dest='media_type', action='store_const', const='movies',
+                       help='sync as movies')
+    media.add_argument('-t', dest='media_type', action='store_const', const='tv',
+                       help='sync as TV episodes')
+    parser.add_argument('-n', dest='show_name', metavar='name',
+                        help='show name, used as the library folder (TV only)')
+    parser.add_argument('-s', dest='season', metavar='number', type=int,
+                        help='season number, zero-padded in the folder name (TV only)')
+    parser.add_argument('-d', dest='dry_run', action='store_true',
+                        help='print the copies and deletions without making them')
+    parser.add_argument('-o', dest='overwrite', action='store_true',
+                        help='delete each remote file before copying over it')
+    parser.add_argument('directory', help='directory holding the .mkv files to sync')
     args = parser.parse_args()
 
     directory = Path(args.directory.rstrip('/'))
