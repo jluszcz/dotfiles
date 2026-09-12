@@ -99,6 +99,17 @@ JSON linting splits the same way, for the same reason:
   config the affected tool then silently ignores. `private_` templates are excluded: rendering one calls
   `onepasswordRead`, which CI cannot satisfy.
 
+TOML linting splits a third time, and handles secrets differently:
+
+- `check-toml` covers plain `*.toml` files; its pattern does not reach a `*.toml.tmpl`.
+- `check-toml-templates` (`scripts/check-toml-templates.sh`) renders each `*.toml.tmpl` and parses the result with
+  `tomllib`. Excluding every template that calls `onepasswordRead` would leave the hook with nothing to check, since
+  none of the TOML templates are `private_`, so the script swaps `onepasswordRead` for `printf` before rendering:
+  `printf` returns its format string unchanged, standing each secret in as its own `op://` reference. The value is
+  wrong and the syntax is real, which is all the parse looks at. Two flags do the rest: `--override-data` supplies
+  `.email`, which otherwise comes from the config `chezmoi init` writes and so is missing on a CI runner, and
+  `--init` defines `promptStringOnce` so that `.chezmoi.toml.tmpl` renders too.
+
 A rendered template only exercises the branches that this machine's context selects, so an
 `{{ if eq .chezmoi.os "darwin" }}` block is checked when you run the hooks on macOS, and the `linux` side is what CI
 checks. Run the hooks locally before pushing macOS-only changes.

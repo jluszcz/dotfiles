@@ -43,3 +43,8 @@ repos:
         # private_ templates pull secrets with onepasswordRead, which cannot
         # render in CI — there is no op binary and no unlocked vault.
         exclude: 'private_'
+    -   id: check-toml-templates
+        name: check chezmoi toml templates
+        entry: scripts/check-toml-templates.sh
+        language: script
+        files: '\.toml\.tmpl$'
