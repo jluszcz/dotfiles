@@ -72,6 +72,13 @@ if [ -d "$HOME/Documents/Programs/plexport" ]; then
     ln -svfh "$HOME/.config/envrc/plexport" "$HOME/Documents/Programs/plexport/.envrc"
 fi
 
+for OUTW_CLONE in Outwatch TvTalk; do
+    if [ -d "$HOME/Documents/Programs/${OUTW_CLONE}" ]; then
+        rm -f "$HOME/Documents/Programs/${OUTW_CLONE}/.dev.vars"
+        ln -svfh "$HOME/.config/envrc/outwatch" "$HOME/Documents/Programs/${OUTW_CLONE}/.dev.vars"
+    fi
+done
+
 if [ -d "$HOME/Documents/Programs/Seen" ]; then
     rm -f "$HOME/Documents/Programs/Seen/.env"
     ln -svfh "$HOME/.config/envrc/seen" "$HOME/Documents/Programs/Seen/.env"
