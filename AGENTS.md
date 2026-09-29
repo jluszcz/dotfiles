@@ -38,13 +38,11 @@ Guard OS-specific blocks with `{{- if eq .chezmoi.os "darwin" }}...{{- end }}`.
 
 `dot_claude/CLAUDE.md` is the source of `~/.claude/CLAUDE.md`, so working in this repo would otherwise load the
 same instructions twice — once as user memory from `~/.claude/`, once as project memory from the source file.
-The `claudeMdExcludes` entry in `dot_claude/settings.json.tmpl` suppresses the source copy. It is matched against
+The `claudeMdExcludes` entry in `dot_claude/settings.json` suppresses the source copy. It is matched against
 *absolute* paths, which is what lets one pattern (`**/dot_claude/CLAUDE.md`) skip the source while leaving the
 applied `~/.claude/CLAUDE.md` loading normally — the two never collide despite the setting itself being applied
 to `~/.claude/settings.json`.
 
-The settings file is a template so the iTerm2 `cc-status` hooks can be guarded on `darwin`: `~/.config/iterm2/cc-status`
-is a symlink iTerm2 installs into its own app bundle, so on the Synology every hook would fire a missing command.
 Claude Code rewrites `~/.claude/settings.json` itself (reordering keys, escaping `/`), so `chezmoi diff` on it is
 mostly noise; compare the parsed JSON instead.
 
