@@ -39,6 +39,16 @@ if [ -f "$HOME/Dropbox/Money/money.db" ]; then
     fi
 fi
 
+# Symlink Paychecker's database out of Dropbox
+if [ -f "$HOME/Dropbox/Money/paychecks.db" ]; then
+    PAYCHECKER_DIR="$HOME/.local/share/paychecker"
+    # A regular file here is a local database, not a stale link, so leave it alone
+    if [ ! -e "${PAYCHECKER_DIR}/paychecks.db" ] || [ -L "${PAYCHECKER_DIR}/paychecks.db" ]; then
+        mkdir -p "${PAYCHECKER_DIR}"
+        ln -svfh "$HOME/Dropbox/Money/paychecks.db" "${PAYCHECKER_DIR}/paychecks.db"
+    fi
+fi
+
 # Copy Obsidian files into ~/Dropbox
 if [ -d "$HOME/Dropbox" ] && [ -f "$HOME/.obsidian/Daily Template.md" ]; then
     mkdir -p "$HOME/Dropbox/Obsidian/Templates"
