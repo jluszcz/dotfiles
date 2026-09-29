@@ -1,0 +1,5 @@
+[report]
+dir = "{{ .chezmoi.homeDir }}/Dropbox/Money"
+
+[backup]
+bucket = "paychecker-{{ onepasswordRead "op://Personal/Amazon AWS SSO/account" }}-{{ onepasswordRead "op://Personal/Amazon AWS SSO/region" }}-an"
