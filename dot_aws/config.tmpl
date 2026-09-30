@@ -11,6 +11,9 @@ cli_pager =
 [profile mistermanager]
 region = {{ $region }}
 
+[profile paychecker]
+region = {{ $region }}
+
 [profile spoilies]
 region = {{ $region }}
 role_arn = arn:aws:iam::{{ onepasswordRead "op://Personal/Spoilies/account" }}:role/OrganizationAccountAccessRole
