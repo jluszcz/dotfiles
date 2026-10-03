@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 skip_errors=false
+filters=()
 
 # Parse flags
 while [ $# -gt 0 ]; do
@@ -9,14 +10,24 @@ while [ $# -gt 0 ]; do
             skip_errors=true
             shift
             ;;
+        -f|--if-file)
+            if [ $# -lt 2 ]; then
+                echo "all: $1 requires a file name or glob" >&2
+                exit 1
+            fi
+            filters+=("$2")
+            shift 2
+            ;;
         -h|--help)
-            echo "Usage: all [-s|--skip-errors] <command> [args...]"
+            echo "Usage: all [-s|--skip-errors] [-f|--if-file <pattern>]... <command> [args...]"
             echo ""
             echo "Run a command in each subdirectory of the current directory."
             echo ""
             echo "Options:"
-            echo "  -s, --skip-errors  Continue to next directory if command fails"
-            echo "  -h, --help         Show this help message"
+            echo "  -s, --skip-errors          Continue to next directory if command fails"
+            echo "  -f, --if-file <pattern>    Only run in directories containing a file matching"
+            echo "                             <pattern> (name or glob; repeat to match any of several)"
+            echo "  -h, --help                 Show this help message"
             exit 0
             ;;
         *)
@@ -24,6 +35,27 @@ while [ $# -gt 0 ]; do
             ;;
     esac
 done
+
+# Succeeds if no filters were given, or if the current directory matches any of them
+matches_filters() {
+    if [ ${#filters[@]} -eq 0 ]; then
+        return 0
+    fi
+    local pattern
+    for pattern in "${filters[@]}"; do
+        if compgen -G "$pattern" > /dev/null; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# A command bash can't find may be a zsh alias or function from .zshrc (e.g. cball), which only an
+# interactive zsh loads. eval re-parses the quoted words so an alias in the first position expands.
+if [ $# -gt 0 ] && ! type -- "$1" > /dev/null 2>&1 && command -v zsh > /dev/null; then
+    # shellcheck disable=SC2016
+    set -- zsh -ic 'eval "${(j: :)${(q)@}}"' zsh "$@"
+fi
 
 # Exit on error unless skip_errors flag is set
 if [ "$skip_errors" = false ]; then
@@ -35,8 +67,13 @@ for f in *; do
         continue
     fi
 
-    echo "$f"
     pushd "$f" > /dev/null
+    if ! matches_filters; then
+        popd > /dev/null
+        continue
+    fi
+
+    echo "$f"
     if [ "$skip_errors" = true ]; then
         "$@" || echo "  (failed, continuing...)"
     else
