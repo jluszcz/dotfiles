@@ -49,6 +49,16 @@ if [ -f "$HOME/Dropbox/Money/paychecks.db" ]; then
     fi
 fi
 
+# Symlink Funder's database out of Dropbox
+if [ -f "$HOME/Dropbox/Money/funder.db" ]; then
+    FUNDER_DIR="$HOME/.local/share/funder"
+    # A regular file here is a local database, not a stale link, so leave it alone
+    if [ ! -e "${FUNDER_DIR}/funder.db" ] || [ -L "${FUNDER_DIR}/funder.db" ]; then
+        mkdir -p "${FUNDER_DIR}"
+        ln -svfh "$HOME/Dropbox/Money/funder.db" "${FUNDER_DIR}/funder.db"
+    fi
+fi
+
 # Copy Obsidian files into ~/Dropbox
 if [ -d "$HOME/Dropbox" ] && [ -f "$HOME/.obsidian/Daily Template.md" ]; then
     mkdir -p "$HOME/Dropbox/Obsidian/Templates"
