@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
     -   id: check-merge-conflict
     -   id: check-json
@@ -13,13 +13,13 @@ repos:
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.20
+    rev: v0.16.10
     hooks:
     -   id: ruff-check
         types_or: [file]
         files: 'dot_bin/executable_(plex-sync|rust-reminder)'
 -   repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.10.0.1
+    rev: v0.11.0.1
     hooks:
     # .tmpl files are excluded because shellcheck cannot parse chezmoi's
     # {{ ... }} syntax; the local hook below renders them first and covers them.
