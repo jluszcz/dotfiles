@@ -14,6 +14,14 @@ short_pwd() {
 
 PS1='\[\033[1m\][Synology]\[\033[0m\] $(short_pwd) » '
 
+# DSM defaults HISTFILE to /var/tmp, which doesn't survive a reboot. Sessions
+# live inside tmux and are detached rather than exited, so bash never writes
+# history on exit; PROMPT_COMMAND appends each command as it runs.
+export HISTFILE="$HOME/.sh_history"
+export HISTSIZE=10000
+export HISTFILESIZE=10000
+PROMPT_COMMAND='history -a'
+
 [ -f "$HOME/.dircolors" ] && eval "$(dircolors "$HOME/.dircolors")"
 
 alias l=ls
