@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Builds the release binary of every project launched via rustbin from a script in ~/.bin.
+# Projects are discovered from those scripts at run time, so a new rustbin wrapper needs no change here.
+
+set -u
+
+failed=()
+
+while IFS= read -r dir; do
+    if [[ ! -d "${dir}" ]]; then
+        echo "Skipping ${dir}: not found"
+        continue
+    fi
+
+    echo "==> ${dir}"
+    pushd "${dir}" >/dev/null || { failed+=("${dir}"); continue; }
+    cargo build --release || failed+=("${dir}")
+    popd >/dev/null || exit 1
+done < <(
+    grep -h '^rustbin ' "$HOME"/.bin/* 2>/dev/null \
+        | sed -e 's/^rustbin "\([^"]*\)".*/\1/' -e "s|\$HOME|${HOME}|" \
+        | sort -u
+)
+
+if (( ${#failed[@]} > 0 )); then
+    echo "Build failed in:" >&2
+    printf '  %s\n' "${failed[@]}" >&2
+    exit 1
+fi
