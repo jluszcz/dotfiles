@@ -180,7 +180,9 @@ if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
     {{- if eq .chezmoi.os "darwin" }}
     # Wrap rustup so a successful `rustup update` that actually installs a new
     # toolchain offers to schedule an "Update Rust" reminder for the next release
-    # (see ~/.bin/rust-reminder). Nothing happens when the toolchain is unchanged.
+    # (see ~/.bin/rust-reminder) and sweeps build artifacts left by the replaced
+    # toolchain, which no installed rustc can reuse. Nothing happens when the
+    # toolchain is unchanged.
     rustup() {
         if [ "${1:-}" = "update" ]; then
             local tmp rc
@@ -189,6 +191,7 @@ if [ -f "{{ .chezmoi.homeDir }}/.cargo/env" ]; then
             rc=${pipestatus[1]}
             if [ "$rc" -eq 0 ] && grep -q 'updated -' "$tmp"; then
                 rust-reminder
+                cargo sweep --installed --recursive "{{ .chezmoi.homeDir }}/Documents/Programs"
             fi
             rm -f "$tmp"
             return "$rc"
