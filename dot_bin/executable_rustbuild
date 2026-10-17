@@ -14,7 +14,7 @@ while IFS= read -r dir; do
 
     echo "==> ${dir}"
     pushd "${dir}" >/dev/null || { failed+=("${dir}"); continue; }
-    cargo build --release || failed+=("${dir}")
+    { cargo clean --release && cargo build --release; } || failed+=("${dir}")
     popd >/dev/null || exit 1
 done < <(
     grep -h '^rustbin ' "$HOME"/.bin/* 2>/dev/null \
