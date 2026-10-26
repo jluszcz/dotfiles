@@ -29,12 +29,18 @@ Guard OS-specific blocks with `{{- if eq .chezmoi.os "darwin" }}...{{- end }}`.
 
 ## Directory Structure
 
-- `dot_bin/` → `~/.bin/` — personal scripts; all files should have `executable_` prefix
+- `dot_bin/` → `~/.bin/` — personal scripts; all files should have `executable_` prefix, except `symlink_` entries
 - `dot_config/` → `~/.config/` — app config files
 - `dot_claude/` → `~/.claude/` — Claude Code settings
 - `private_dot_ssh/` → `~/.ssh/` — SSH config (private)
 - `run_onchange_brew.sh.tmpl` — runs `brew bundle` when the Brewfile changes
-- `run_symlinks.sh.tmpl` — creates symlinks on every apply: app prefs (macOS only) and the oh-my-zsh theme
+- `symlink_Dropbox.tmpl`, `private_Documents/symlink_*.tmpl`, `dot_bin/symlink_git` — symlinks chezmoi manages
+  natively (`symlink_` files hold the link target). `.chezmoiignore.tmpl` uses `stat`/`lstat` to skip the Dropbox
+  links when Dropbox isn't installed, and to leave a real `~/Dropbox` folder, or a real file or folder where a
+  `~/Documents` link goes, alone — chezmoi would otherwise delete it to make way for the link
+- `run_symlinks.sh.tmpl` — creates the remaining symlinks on every apply: app prefs, Dropbox-backed databases and
+  project `.env` files (macOS only), and the oh-my-zsh theme. These stay scripted because they depend on whether
+  the app or project clone exists, which a `symlink_` entry would create instead
 - `run_once_before_rustup.sh.tmpl` — installs rustup (and sccache on Linux) before the Brewfile's `cargo` entries
   need it; `run_onchange_brew.sh.tmpl` sources `~/.cargo/env` because rustup is installed with `--no-modify-path`
 - `run_after_git-secrets.sh.tmpl` — populates `~/.git-templates/git-secrets`, the `init.templateDir` in
@@ -55,7 +61,7 @@ mostly noise; compare the parsed JSON instead.
 
 Interactive shells are zsh (`dot_zshrc.tmpl`) on every machine except the Synology NAS, which logs in under POSIX
 `sh`. `.chezmoiignore.tmpl` enforces the split: `.zshrc` is ignored on the `Synology` host, while `.profile`,
-`.tmux.conf`, `.bin/up-nas` and `.config/rclone/` are ignored everywhere else.
+`.tmux.conf`, `.bin/git`, `.bin/up-nas` and `.config/rclone/` are ignored everywhere else.
 
 `dot_profile` is therefore Synology-only and has to stay POSIX — `case ... esac` rather than `[[ ]]`, no arrays, no
 `local`, no `+=`. Under `dot_bin/` the shebang decides rather than the directory: bash is installed on the NAS, so a
