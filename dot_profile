@@ -16,11 +16,20 @@ PS1='\[\033[1m\][Synology]\[\033[0m\] $(short_pwd) » '
 
 # DSM defaults HISTFILE to /var/tmp, which doesn't survive a reboot. Sessions
 # live inside tmux and are detached rather than exited, so bash never writes
-# history on exit; PROMPT_COMMAND appends each command as it runs.
+# history on exit; PROMPT_COMMAND appends each command as it runs. Bash reads
+# HISTFILE only at startup, so PROMPT_COMMAND also reloads it to pick up what
+# other long-lived panes have appended since — otherwise Ctrl-R can't see them.
+# `history -c; history -r` rather than `history -n`: -n tracks its position as a
+# line count, which goes stale once another pane appends before this one does,
+# skipping that pane's lines and re-reading this pane's own.
 export HISTFILE="$HOME/.sh_history"
 export HISTSIZE=10000
 export HISTFILESIZE=10000
-PROMPT_COMMAND='history -a'
+# `history -a` creates a missing HISTFILE only once there is a command to
+# write, so the reload at the first prompt would fail on it; create it here,
+# 0600 as bash would, since history can hold secrets typed on the command line.
+[ -f "$HISTFILE" ] || (umask 077 && : > "$HISTFILE")
+PROMPT_COMMAND='history -a; history -c; history -r'
 
 [ -f "$HOME/.dircolors" ] && eval "$(dircolors "$HOME/.dircolors")"
 
