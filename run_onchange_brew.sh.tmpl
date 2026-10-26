@@ -2,5 +2,8 @@
 
 {{- if eq .chezmoi.os "darwin" }}
 # Brewfile hash: {{ include "dot_config/Brewfile" | sha256sum }}
+# The Brewfile's cargo entries need cargo, which rustup installs off PATH
+# shellcheck source=/dev/null
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 brew bundle --verbose --file={{ joinPath .chezmoi.homeDir ".config" "Brewfile" | quote }}
 {{- end }}

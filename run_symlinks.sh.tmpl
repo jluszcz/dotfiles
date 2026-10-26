@@ -110,12 +110,13 @@ if [ -d "$HOME/Documents/Programs/Spoilies" ]; then
 fi
 # End .env files
 
-# Symlink oh-my-zsh theme
+{{- end }}
+
+# Symlink oh-my-zsh theme; -n rather than macOS-only -h so this also runs on Linux
 THEME_DIR="$HOME/.oh-my-zsh/custom/themes"
 if [ -d "${THEME_DIR}" ]; then
-    ln -svfh "$HOME/.config/gallifrey-custom.zsh-theme" "${THEME_DIR}/"
+    ln -svfn "$HOME/.config/gallifrey-custom.zsh-theme" "${THEME_DIR}/"
 fi
-{{- end }}
 
 {{- if eq .chezmoi.hostname "Synology" }}
 ln -svf /var/packages/Git/target/bin/git "$HOME/.bin/git"

@@ -34,7 +34,12 @@ Guard OS-specific blocks with `{{- if eq .chezmoi.os "darwin" }}...{{- end }}`.
 - `dot_claude/` → `~/.claude/` — Claude Code settings
 - `private_dot_ssh/` → `~/.ssh/` — SSH config (private)
 - `run_onchange_brew.sh.tmpl` — runs `brew bundle` when the Brewfile changes
-- `run_symlinks.sh.tmpl` — creates symlinks for app prefs on every apply (macOS only)
+- `run_symlinks.sh.tmpl` — creates symlinks on every apply: app prefs (macOS only) and the oh-my-zsh theme
+- `run_once_before_rustup.sh.tmpl` — installs rustup (and sccache on Linux) before the Brewfile's `cargo` entries
+  need it; `run_onchange_brew.sh.tmpl` sources `~/.cargo/env` because rustup is installed with `--no-modify-path`
+- `run_after_git-secrets.sh.tmpl` — populates `~/.git-templates/git-secrets`, the `init.templateDir` in
+  `dot_gitconfig.tmpl`, once git-secrets is installed
+- `.chezmoiexternal.toml.tmpl` — clones oh-my-zsh as a `git-repo` external and pulls it weekly (not on Synology)
 
 `dot_claude/CLAUDE.md` is the source of `~/.claude/CLAUDE.md`, so working in this repo would otherwise load the
 same instructions twice — once as user memory from `~/.claude/`, once as project memory from the source file.
