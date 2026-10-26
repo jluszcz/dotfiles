@@ -1,0 +1,99 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
+
+"""Validate that the current directory holds a complete season of a TV show.
+
+Every non-hidden file must be named "<Show> - sNNeNN.<ext>", or
+"<Show> - sNNeNN-eNN.<ext>" for a file spanning several episodes. All files
+must share one show and one season, and together cover episode 1 through the
+highest episode with no gaps or overlaps. Subdirectories are ignored.
+
+Prints each problem and exits non-zero if the directory fails validation.
+
+macOS only.
+"""
+
+import re
+import sys
+from collections import Counter
+from pathlib import Path
+
+EPISODE_RE = re.compile(
+    r"^(?P<show>.+) - s(?P<season>\d+)e(?P<start>\d+)(?:-e(?P<end>\d+))?\.[^.]+$",
+    re.IGNORECASE,
+)
+
+
+def parse(names):
+    """Return ({name: (show, season, start, end)}, [unparseable names])."""
+    parsed, bad = {}, []
+    for name in names:
+        m = EPISODE_RE.match(name)
+        if not m:
+            bad.append(name)
+            continue
+        start = int(m["start"])
+        end = int(m["end"]) if m["end"] else start
+        if end < start:
+            bad.append(name)
+            continue
+        parsed[name] = (m["show"], int(m["season"]), start, end)
+    return parsed, bad
+
+
+def main():
+    names = sorted(
+        p.name for p in Path.cwd().iterdir() if p.is_file() and not p.name.startswith(".")
+    )
+    if not names:
+        print("Error: no files found", file=sys.stderr)
+        return 1
+
+    parsed, bad = parse(names)
+    problems = [f"unrecognized name: {name}" for name in bad]
+
+    if parsed:
+        show, season = Counter(v[:2] for v in parsed.values()).most_common(1)[0][0]
+
+        owners = {}
+        for name, (file_show, file_season, start, end) in parsed.items():
+            if file_show != show:
+                problems.append(f"show is not '{show}': {name}")
+            if file_season != season:
+                problems.append(f"season is not {season}: {name}")
+            # A stray file's episodes belong to another season's numbering, so
+            # counting them would report bogus gaps and overlaps in this one.
+            if (file_show, file_season) != (show, season):
+                continue
+            for ep in range(start, end + 1):
+                owners.setdefault(ep, []).append(name)
+
+        for ep, files in sorted(owners.items()):
+            if len(files) > 1:
+                problems.append(f"episode {ep} appears in multiple files: {', '.join(files)}")
+
+        last = max(owners, default=0)
+        if last < 1:
+            problems.append(f"no episodes numbered 1 or higher for '{show}' season {season}")
+
+        missing = [ep for ep in range(1, last + 1) if ep not in owners]
+        for ep in missing:
+            before = owners.get(max((e for e in owners if e < ep), default=0))
+            after = owners.get(min((e for e in owners if e > ep), default=0))
+            neighbors = " and ".join(f[0] for f in (before, after) if f)
+            problems.append(f"missing episode {ep} (next to {neighbors})")
+
+    if problems:
+        for problem in problems:
+            print(f"Error: {problem}", file=sys.stderr)
+        return 1
+
+    print(f"OK: {show} season {season}, episodes 1-{last} in {len(parsed)} files")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

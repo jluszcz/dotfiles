@@ -17,7 +17,7 @@ repos:
     hooks:
     -   id: ruff-check
         types_or: [file]
-        files: 'dot_bin/executable_(plex-sync|rust-reminder)'
+        files: 'dot_bin/executable_(plex-sync|rust-reminder|tvcheck)'
 -   repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.11.0.1
     hooks:
@@ -26,7 +26,7 @@ repos:
     -   id: shellcheck
         types: [file]
         files: 'dot_bin/executable_|dot_config/rustbin|^scripts/'
-        exclude: '(\.tmpl$|executable_(plex-sync|rust-reminder))'
+        exclude: '(\.tmpl$|executable_(plex-sync|rust-reminder|tvcheck))'
         args: [-x]
 -   repo: local
     hooks:
