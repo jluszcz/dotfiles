@@ -41,6 +41,11 @@ def file_display(names):
         while suffix and not name.endswith(suffix):
             suffix = suffix[1:]
 
+    # Keep numbers whole: e10..e19 would otherwise share the "1" and differ only in the last digit.
+    # The same goes for an "-eNN" span end that every name happens to share.
+    prefix = re.sub(r'(?:\d+-e)?\d*$', '', prefix, flags=re.IGNORECASE)
+    suffix = re.sub(r'^\d*(?:-e\d+)?', '', suffix, flags=re.IGNORECASE)
+
     if len(prefix) + len(suffix) >= min(len(n) for n in names):
         return ', '.join(names)
 
@@ -51,7 +56,28 @@ def file_display(names):
             mid = mid[:-len(suffix)]
         middles.append(mid)
 
+    # A multi-episode file like "e01-e02" counts as each episode it spans.
+    spans = [re.fullmatch(r'(\d+)(?:-e(\d+))?', m, re.IGNORECASE) for m in middles]
+    if all(spans) and all(int(s.group(2) or s.group(1)) >= int(s.group(1)) for s in spans):
+        numbers = {}
+        for span in spans:
+            start, end = span.group(1), span.group(2) or span.group(1)
+            for n in range(int(start), int(end) + 1):
+                numbers.setdefault(n, str(n).zfill(len(start)))
+        middles = collapse_ranges(numbers)
+
     return f"{prefix}[{', '.join(middles)}]{suffix}"
+
+
+def collapse_ranges(numbers):
+    """Collapse runs of consecutive numbers into "first-last", given {number: its zero-padded text}."""
+    runs = []
+    for n in sorted(numbers):
+        if runs and n == runs[-1][1] + 1:
+            runs[-1][1] = n
+        else:
+            runs.append([n, n])
+    return [numbers[a] if a == b else f"{numbers[a]}-{numbers[b]}" for a, b in runs]
 
 
 def detect_show_season(files):
