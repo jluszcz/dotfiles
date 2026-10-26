@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Installs or updates the Synology toolchain (rclone, tmux, chezmoi) into
+# ~/.bin, then initializes chezmoi on first run. Copied over by hand to
+# bootstrap a new NAS, so it can't rely on anything chezmoi applies.
+
+BIN="$HOME/.bin"
+REPO="git@github.com:jluszcz/dotfiles.git"
+TEMP_DIR=$(mktemp -d)
+
+cleanup() {
+  rm -rf "$TEMP_DIR"
+}
+trap cleanup EXIT
+
+mkdir -p "$BIN"
+# .chezmoi.toml.tmpl points scriptTempDir here because /tmp is noexec
+mkdir -p "$HOME/.cache/chezmoi/tmp"
+
+update_rclone() {
+  local zip="rclone-current-linux-amd64.zip"
+  local dir latest
+
+  latest=$(curl -fsSL https://downloads.rclone.org/version.txt)
+  if [ -x "$BIN/rclone" ] && [ "$("$BIN/rclone" version | head -1)" = "$latest" ]; then
+    return
+  fi
+
+  pushd "$TEMP_DIR" > /dev/null
+  curl -fsSO "https://downloads.rclone.org/$zip"
+  python3 -c "import zipfile, sys; zipfile.ZipFile(sys.argv[1]).extractall()" "$zip"
+  dir=$(find . -maxdepth 1 -name "rclone-*-linux-amd64" -type d | head -1)
+  chmod 755 "$dir/rclone"
+  mv "$dir/rclone" "$BIN/rclone"
+  popd > /dev/null
+}
+
+update_tmux() {
+  local dest="$BIN/tmux"
+  local tag version
+
+  tag=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/tmux/tmux-builds/releases/latest)
+  tag="${tag##*/}"
+  version="${tag#v}"
+
+  if [ -x "$dest" ] && [ "$("$dest" -V)" = "tmux $version" ]; then
+    return
+  fi
+
+  # A client can't attach to a server of a different version, so sessions
+  # started by the old binary stay unreachable until that server exits.
+  if [ -x "$dest" ] && "$dest" list-sessions > /dev/null 2>&1; then
+    echo "warning: tmux server still running $("$dest" -V); run 'tmux kill-server' to use $version" >&2
+  fi
+
+  curl -fsSL "https://github.com/tmux/tmux-builds/releases/download/$tag/tmux-$version-linux-x86_64.tar.gz" \
+    | tar -xz -C "$TEMP_DIR" tmux
+  chmod 755 "$TEMP_DIR/tmux"
+  mv "$TEMP_DIR/tmux" "$dest"
+}
+
+update_chezmoi() {
+  if [ -x "$BIN/chezmoi" ]; then
+    "$BIN/chezmoi" upgrade
+  else
+    sh -c "$(curl -fsSL https://get.chezmoi.io)" -- -b "$BIN"
+  fi
+}
+
+update_rclone
+update_tmux
+update_chezmoi
+
+if [ ! -d "$("$BIN/chezmoi" source-path 2>/dev/null || echo "$HOME/.local/share/chezmoi")" ]; then
+  "$BIN/chezmoi" init --apply "$REPO"
+fi
+
+echo "rclone:  $("$BIN/rclone" version | head -1)"
+echo "tmux:    $("$BIN/tmux" -V)"
+echo "chezmoi: $("$BIN/chezmoi" --version)"

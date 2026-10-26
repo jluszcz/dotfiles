@@ -50,7 +50,7 @@ mostly noise; compare the parsed JSON instead.
 
 Interactive shells are zsh (`dot_zshrc.tmpl`) on every machine except the Synology NAS, which logs in under POSIX
 `sh`. `.chezmoiignore.tmpl` enforces the split: `.zshrc` is ignored on the `Synology` host, while `.profile`,
-`.tmux.conf`, `.bin/up-rc` and `.config/rclone/` are ignored everywhere else.
+`.tmux.conf`, `.bin/up-nas` and `.config/rclone/` are ignored everywhere else.
 
 `dot_profile` is therefore Synology-only and has to stay POSIX — `case ... esac` rather than `[[ ]]`, no arrays, no
 `local`, no `+=`. Under `dot_bin/` the shebang decides rather than the directory: bash is installed on the NAS, so a
