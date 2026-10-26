@@ -41,12 +41,11 @@ chezmoi init git@github.com:jluszcz/dotfiles.git
 
 ### Synology
 
-```bash
-# install rclone from https://rclone.org/downloads/
-# install tmux from https://github.com/tmux/tmux-builds/releases
+Copy [`dot_bin/executable_up-nas`](dot_bin/executable_up-nas) to the NAS and run it. It installs rclone, tmux and
+chezmoi into `~/.bin`, then runs `chezmoi init --apply`. Once applied, `up-nas` updates all three.
 
-mkdir -p ~/.cache/chezmoi/tmp
-# follow instructions at https://www.chezmoi.io/install
+```bash
+bash up-nas
 ```
 
 ## General
