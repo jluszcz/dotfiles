@@ -4,7 +4,10 @@
 # dependencies = []
 # ///
 
-"""Validate that the current directory holds a complete season of a TV show.
+"""Validate that a directory holds a complete season of a TV show.
+
+Checks the directory given as the sole argument, or the current directory if
+none is given.
 
 Every non-hidden file must be named "<Show> - sNNeNN.<ext>", or
 "<Show> - sNNeNN-eNN.<ext>" for a file spanning several episodes. All files
@@ -16,6 +19,7 @@ Prints each problem and exits non-zero if the directory fails validation.
 macOS only.
 """
 
+import argparse
 import re
 import sys
 from collections import Counter
@@ -45,11 +49,29 @@ def parse(names):
 
 
 def main():
-    names = sorted(
-        p.name for p in Path.cwd().iterdir() if p.is_file() and not p.name.startswith(".")
+    parser = argparse.ArgumentParser(
+        prog="tvcheck",
+        description=__doc__.splitlines()[0],
     )
+    parser.add_argument(
+        "directory", nargs="?", default=".", help="directory to check (default: current directory)"
+    )
+    args = parser.parse_args()
+
+    directory = Path(args.directory)
+    if not directory.is_dir():
+        print(f"Error: '{directory}' is not a directory", file=sys.stderr)
+        return 1
+
+    try:
+        names = sorted(
+            p.name for p in directory.iterdir() if p.is_file() and not p.name.startswith(".")
+        )
+    except OSError as e:
+        print(f"Error: cannot read '{directory}': {e.strerror}", file=sys.stderr)
+        return 1
     if not names:
-        print("Error: no files found", file=sys.stderr)
+        print(f"Error: no files found in '{directory}'", file=sys.stderr)
         return 1
 
     parsed, bad = parse(names)
