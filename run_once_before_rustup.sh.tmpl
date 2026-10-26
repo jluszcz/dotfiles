@@ -1,0 +1,30 @@
+{{- if ne .chezmoi.hostname "Synology" -}}
+#!/usr/bin/env sh
+
+set -eu
+
+# Runs before the Brewfile's cargo entries need it. --no-modify-path because
+# .zshrc already sources ~/.cargo/env.
+if [ ! -x "$HOME/.cargo/bin/rustup" ]; then
+    # Fetched before piping: `curl | sh` reports sh's status, and sh exits 0 on
+    # the empty input a failed download leaves it, which would mark this
+    # run_once script done without rustup ever being installed
+    rustup_init=$(curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs)
+    printf '%s\n' "$rustup_init" | sh -s -- -y --no-modify-path
+fi
+
+{{- if eq .chezmoi.os "linux" }}
+
+# Homebrew provides sccache on macOS; elsewhere .cargo/config.toml expects it
+# alongside cargo
+if [ ! -x "$HOME/.cargo/bin/sccache" ]; then
+    tag=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/mozilla/sccache/releases/latest)
+    tag="${tag##*/}"
+    name="sccache-$tag-$(uname -m)-unknown-linux-musl"
+    tmp=$(mktemp -d)
+    trap 'rm -rf "$tmp"' EXIT
+    curl -fsSL "https://github.com/mozilla/sccache/releases/download/$tag/$name.tar.gz" | tar -xz -C "$tmp"
+    install -m 755 "$tmp/$name/sccache" "$HOME/.cargo/bin/sccache"
+fi
+{{- end }}
+{{- end }}

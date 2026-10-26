@@ -86,6 +86,12 @@ brew "yt-dlp"
 brew "hashicorp/tap/terraform"
 # Command-line interface for 1Password
 cask "1password-cli"
+# Client for the Dropbox cloud storage service
+cask "dropbox"
+# Terminal emulator that uses platform-native UI and GPU acceleration
+cask "ghostty"
+# Terminal emulator as alternative to Apple's Terminal app
+cask "iterm2"
 # Status bar application to enable/disable Yubikey Nano
 cask "pallotron-yubiswitch"
 cargo "cargo-llvm-cov"

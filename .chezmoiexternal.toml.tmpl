@@ -1,0 +1,10 @@
+{{- if ne .chezmoi.hostname "Synology" }}
+# git-repo rather than archive: an existing clone is pulled in place, and
+# oh-my-zsh's own updater keeps working against it
+[".oh-my-zsh"]
+    type = "git-repo"
+    url = "https://github.com/ohmyzsh/ohmyzsh.git"
+    refreshPeriod = "168h"
+    # Matches the oh-my-zsh installer's own clone; its updater works on a shallow one
+    clone.args = ["--depth", "1"]
+{{- end }}

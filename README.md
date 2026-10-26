@@ -1,42 +1,35 @@
 # `dotfiles`
 
-## Mac OS
+`chezmoi init --apply` installs oh-my-zsh and rustup and, where git-secrets is installed, sets up
+its hook template. On Linux it also installs sccache; on macOS the Brewfile does. oh-my-zsh is
+pulled weekly on apply after that.
 
-- Install [iTerm2](https://iterm2.com)
-- Install [Dropbox](https://www.dropbox.com/install)
+## Mac OS
 
 ```bash
 sudo xcode-select --install
 
 # follow instructions at https://brew.sh
-# follow instructions at https://ohmyz.sh
-# follow instructions at https://rustup.rs
-
-brew install chezmoi
 
 # chezmoi pulls secrets from 1Password at apply time, so the CLI has to be
 # installed and signed in first
-brew install --cask 1password-cli
+brew install chezmoi 1password-cli
 op signin
 
-chezmoi init git@github.com:jluszcz/dotfiles.git
+chezmoi init --apply git@github.com:jluszcz/dotfiles.git
 ```
 
 ## Linux
 
 ```bash
-sudo yum -y install zsh
-# set default shell by editing /etc/passwd
+sudo yum -y install zsh util-linux-user
+chsh -s "$(command -v zsh)"
 
-# follow instructions at https://ohmyz.sh
-# follow instructions at https://rustup.rs
-# install sccache from https://github.com/mozilla/sccache/releases
-# follow instructions at https://www.chezmoi.io/install
+# chezmoi pulls secrets from 1Password at apply time, so install the CLI
+# (https://developer.1password.com/docs/cli/get-started) and sign in first
+op signin
 
-sudo mv bin/chezmoi /usr/local/bin
-rmdir bin
-
-chezmoi init git@github.com:jluszcz/dotfiles.git
+sh -c "$(curl -fsLS get.chezmoi.io)" -- -b ~/.local/bin init --apply git@github.com:jluszcz/dotfiles.git
 ```
 
 ### Synology
@@ -46,12 +39,4 @@ chezmoi into `~/.bin`, then runs `chezmoi init --apply`. Once applied, `up-nas` 
 
 ```bash
 bash up-nas
-```
-
-## General
-
-### git-secrets
-
-```bash
-git secrets --install ~/.git-templates/git-secrets
 ```
