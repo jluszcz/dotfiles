@@ -3,6 +3,27 @@ README.md
 
 .bin/__pycache__
 
+{{- if eq .chezmoi.os "darwin" }}
+{{-   $cloudDropbox := stat (joinPath .chezmoi.homeDir "Library" "CloudStorage" "Dropbox") }}
+{{-   $dropbox := lstat (joinPath .chezmoi.homeDir "Dropbox") }}
+{{- /* A real ~/Dropbox is an older install's folder, which the link would replace */}}
+{{-   if or (not $cloudDropbox) (and $dropbox (ne $dropbox.type "symlink")) }}
+Dropbox
+{{-   end }}
+{{- /* The Documents links reach Dropbox through ~/Dropbox, so they need it to resolve */}}
+{{-   if not (or $cloudDropbox (stat (joinPath .chezmoi.homeDir "Dropbox"))) }}
+Documents/
+{{-   else }}
+{{-     range list "Amazon" "Career" "Money" "Netflix" }}
+{{-       $doc := lstat (joinPath $.chezmoi.homeDir "Documents" .) }}
+{{- /* chezmoi would delete a real file or folder here to make way for the link */}}
+{{-       if and $doc (ne $doc.type "symlink") }}
+Documents/{{ . }}
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}
+
 {{- if ne .chezmoi.os "darwin" }}
 .bin/brewdump
 .bin/funder
@@ -26,6 +47,8 @@ README.md
 .config/rustbin
 .config/Sublime.json
 .obsidian/
+Documents/
+Dropbox
 .ssh/config
 {{- end }}
 
@@ -38,6 +61,7 @@ README.md
 {{- end }}
 
 {{- if ne .chezmoi.hostname "Synology" }}
+.bin/git
 .bin/up-nas
 .config/rclone/
 .profile
