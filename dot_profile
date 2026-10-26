@@ -28,15 +28,16 @@ alias l=ls
 alias ll='ls -lh'
 
 # copy rather than sync: the bucket has no versioning, so an unmounted or
-# half-mounted /volume1 would propagate as permanent deletions. --immutable
-# makes an unexpected size change an error instead of a replacement, which
-# would also trigger Deep Archive's 180-day early-deletion charge.
+# half-mounted /volume1 would propagate as permanent deletions. A size change
+# overwrites the bucket's copy, so replacing a file within 180 days of its
+# upload incurs Deep Archive's early-deletion charge, and the old copy is
+# unrecoverable — a truncated or corrupt local file replaces a good archive.
+# `rc --immutable` refuses any replacement for a run that shouldn't make one.
 rc() {
     rclone copy /volume1/Plex/Library s3-media:jluszcz-physical-media \
         --exclude '.DS_Store' \
         --exclude '@eaDir/**' \
         --size-only \
-        --immutable \
         --fast-list \
         --transfers 2 \
         --retries 10 \
