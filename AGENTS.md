@@ -46,6 +46,12 @@ Guard OS-specific blocks with `{{- if eq .chezmoi.os "darwin" }}...{{- end }}`.
 - `run_after_git-secrets.sh.tmpl` — populates `~/.git-templates/git-secrets`, the `init.templateDir` in
   `dot_gitconfig.tmpl`, once git-secrets is installed
 - `.chezmoiexternal.toml.tmpl` — clones oh-my-zsh as a `git-repo` external and pulls it weekly (not on Synology)
+- `dot_terminfo/x/xterm-ghostty` — Ghostty's compiled terminfo, applied only on the Synology. Ghostty's
+  `ssh-terminfo` compiles the entry on the remote with `tic`, which DSM doesn't ship, so the compiled copy from
+  `Ghostty.app/Contents/Resources/terminfo/78/` is committed instead; re-copy it when Ghostty's terminfo changes.
+  `run_after_ghostty-ssh-cache.sh.tmpl` (macOS) adds the NAS to Ghostty's `+ssh-cache` so it stops attempting
+  the install, and warning, on every login. The cache also stops Ghostty reinstalling a newer entry, so the script
+  warns when the committed copy no longer matches the app's
 
 `dot_claude/CLAUDE.md` is the source of `~/.claude/CLAUDE.md`, so working in this repo would otherwise load the
 same instructions twice — once as user memory from `~/.claude/`, once as project memory from the source file.
@@ -61,7 +67,7 @@ mostly noise; compare the parsed JSON instead.
 
 Interactive shells are zsh (`dot_zshrc.tmpl`) on every machine except the Synology NAS, which logs in under POSIX
 `sh`. `.chezmoiignore.tmpl` enforces the split: `.zshrc` is ignored on the `Synology` host, while `.profile`,
-`.tmux.conf`, `.bin/git`, `.bin/up-nas` and `.config/rclone/` are ignored everywhere else.
+`.tmux.conf`, `.bin/git`, `.bin/up-nas`, `.terminfo/` and `.config/rclone/` are ignored everywhere else.
 
 `dot_profile` is therefore Synology-only and has to stay POSIX — `case ... esac` rather than `[[ ]]`, no arrays, no
 `local`, no `+=`. Under `dot_bin/` the shebang decides rather than the directory: bash is installed on the NAS, so a
