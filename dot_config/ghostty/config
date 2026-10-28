@@ -1,12 +1,17 @@
-window-width = 130
+window-width = 140
 window-height = 40
 
 working-directory = home
+window-save-state = never
+confirm-close-surface = false
 
 copy-on-select = clipboard
 
 theme = Bluloco Light
 font-family = Menlo
 font-size = 14
+
+cursor-style-blink = false
+scrollback-limit-bytes = 100000000
 
 shell-integration-features = ssh-terminfo
