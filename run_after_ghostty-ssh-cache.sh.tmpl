@@ -1,0 +1,20 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env sh
+
+set -eu
+
+# The NAS has no tic to compile terminfo with, so Ghostty's ssh-terminfo can't
+# install it there; chezmoi ships the compiled entry instead (dot_terminfo/).
+# Caching the host stops Ghostty retrying, and warning, on every login.
+APP=/Applications/Ghostty.app/Contents
+if [ -x "$APP/MacOS/ghostty" ]; then
+    "$APP/MacOS/ghostty" +ssh-cache --add=jluszcz@synology.local
+
+    # The cache also stops Ghostty reinstalling when its terminfo changes, so
+    # nothing else would notice the committed copy falling behind.
+    if ! cmp -s "$APP/Resources/terminfo/78/xterm-ghostty" \
+        {{ joinPath .chezmoi.sourceDir "dot_terminfo" "x" "xterm-ghostty" | quote }}; then
+        echo "warning: dot_terminfo/x/xterm-ghostty differs from Ghostty's; re-copy it from $APP/Resources/terminfo/78/" >&2
+    fi
+fi
+{{- end }}
