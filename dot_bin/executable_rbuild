@@ -4,6 +4,37 @@
 
 set -u
 
+check=false
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -c|--check)
+            check=true
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: rbuild [-c|--check]"
+            echo ""
+            echo "Build the release binary of every project launched via rustbin."
+            echo ""
+            echo "Options:"
+            echo "  -c, --check    First run cball (build, test, clippy, fmt) in each project"
+            echo "  -h, --help     Show this help message"
+            exit 0
+            ;;
+        *)
+            echo "rbuild: unknown option $1" >&2
+            exit 1
+            ;;
+    esac
+done
+
+# cball is a zsh function from .zshrc, which only an interactive zsh loads. stdin is the loop's
+# directory list, so keep the shell from reading it.
+run_checks() {
+    zsh -ic cball </dev/null
+}
+
 failed=()
 
 while IFS= read -r dir; do
@@ -14,7 +45,11 @@ while IFS= read -r dir; do
 
     echo "==> ${dir}"
     pushd "${dir}" >/dev/null || { failed+=("${dir}"); continue; }
-    cargo build --release || failed+=("${dir}")
+    if [[ "${check}" == true ]] && ! run_checks; then
+        failed+=("${dir}")
+    elif ! cargo build --release; then
+        failed+=("${dir}")
+    fi
     popd >/dev/null || exit 1
 done < <(
     grep -h '^rustbin ' "$HOME"/.bin/* 2>/dev/null \
@@ -23,7 +58,7 @@ done < <(
 )
 
 if (( ${#failed[@]} > 0 )); then
-    echo "Build failed in:" >&2
+    echo "Failed in:" >&2
     printf '  %s\n' "${failed[@]}" >&2
     exit 1
 fi
