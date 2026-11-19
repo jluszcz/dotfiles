@@ -38,9 +38,10 @@ Guard OS-specific blocks with `{{- if eq .chezmoi.os "darwin" }}...{{- end }}`.
   natively (`symlink_` files hold the link target). `.chezmoiignore.tmpl` uses `stat`/`lstat` to skip the Dropbox
   links when Dropbox isn't installed, and to leave a real `~/Dropbox` folder, or a real file or folder where a
   `~/Documents` link goes, alone — chezmoi would otherwise delete it to make way for the link
-- `run_symlinks.sh.tmpl` — creates the remaining symlinks on every apply: app prefs, Dropbox-backed databases and
-  project `.env` files (macOS only), and the oh-my-zsh theme. These stay scripted because they depend on whether
-  the app or project clone exists, which a `symlink_` entry would create instead
+- `run_symlinks.sh.tmpl` — creates the remaining symlinks on every apply: app prefs, Dropbox-backed databases,
+  project `.env` files and ListOfLists-rs' `buckets/generator/` links (macOS only), and the oh-my-zsh theme. These
+  stay scripted because they depend on whether the app or project clone exists, which a `symlink_` entry would
+  create instead
 - `run_once_before_rustup.sh.tmpl` — installs rustup (and sccache on Linux) before the Brewfile's `cargo` entries
   need it; `run_onchange_brew.sh.tmpl` sources `~/.cargo/env` because rustup is installed with `--no-modify-path`
 - `run_after_git-secrets.sh.tmpl` — populates `~/.git-templates/git-secrets`, the `init.templateDir` in

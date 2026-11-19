@@ -97,6 +97,30 @@ if [ -d "$HOME/Documents/Programs/Spoilies" ]; then
 fi
 # End .env files
 
+# Symlink ListOfLists' local generator bucket to the template and each list's JSON
+LOL_GENERATOR_DIR="$HOME/Documents/Programs/ListOfLists-rs/buckets/generator"
+if [ -d "$HOME/Documents/Programs/ListOfLists-rs" ]; then
+    mkdir -p "${LOL_GENERATOR_DIR}"
+    LOL_TEMPLATE="${LOL_GENERATOR_DIR}/index.template"
+    # A regular file here is a local template, not a stale link, so leave it alone
+    if [ -f "$HOME/Documents/Programs/ListOfLists-rs/index.template" ] \
+        && { [ ! -e "${LOL_TEMPLATE}" ] || [ -L "${LOL_TEMPLATE}" ]; }; then
+        # Relative, so the link survives the clone moving
+        ln -svfh ../../index.template "${LOL_TEMPLATE}"
+    fi
+
+    for LOL_LIST in burgerl.ist:BurgerList/burgerlist.json \
+                    moviel.ist:MovieList/movielist.json \
+                    starl.ist:StarList/starlist.json; do
+        LOL_LINK="${LOL_GENERATOR_DIR}/${LOL_LIST%%:*}.json"
+        LOL_TARGET="$HOME/Documents/${LOL_LIST#*:}"
+        # A regular file here is a local copy of the list, not a stale link, so leave it alone
+        if [ -f "${LOL_TARGET}" ] && { [ ! -e "${LOL_LINK}" ] || [ -L "${LOL_LINK}" ]; }; then
+            ln -svfh "${LOL_TARGET}" "${LOL_LINK}"
+        fi
+    done
+fi
+
 {{- end }}
 
 # Symlink oh-my-zsh theme; -n rather than macOS-only -h so this also runs on Linux
