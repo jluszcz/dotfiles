@@ -9,8 +9,12 @@ workflows:
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-python@v7.1.0'
         - 'pre-commit/action@v3.0.1'
-    '.github/workflows/claude-code-review.yml': []
-    '.github/workflows/claude.yml': []
+    '.github/workflows/claude-code-review.yml':
+        - 'actions/checkout@v7.0.1'
+        - 'anthropics/claude-code-action@v1.0.264'
+    '.github/workflows/claude.yml':
+        - 'actions/checkout@v7.0.1'
+        - 'anthropics/claude-code-action@v1.0.264'
 dependencies:
     'actions/cache@v4':
         ref: 'v4'
@@ -27,6 +31,18 @@ dependencies:
         commit: 'sha1-6d4fd22b20465ccc0f7354476588e8df7c9ca0e0'
         owner_id: 44036562
         repo_id: 192625525
+    'anthropics/claude-code-action@v1.0.264':
+        ref: 'v1.0.264'
+        commit: 'sha1-d70510b174a1244958df0b03166a54912811f3e6'
+        owner_id: 76263028
+        repo_id: 986421638
+        uses:
+            - 'oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6'
+    'oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6':
+        ref: 'v2.2.0'
+        commit: 'sha1-0c5077e51419868618aeaa5fe8019c62421857d6'
+        owner_id: 108928776
+        repo_id: 512644635
     'pre-commit/action@v3.0.1':
         ref: 'v3.0.1'
         commit: 'sha1-2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd'
